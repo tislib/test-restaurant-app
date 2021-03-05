@@ -1,0 +1,56 @@
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        csv.enabled false
+        html.destination file("${buildDir}/jacocoHtml")
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            element = 'PACKAGE'
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.7
+            }
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.7
+            }
+            excludes = [
+                    'az.goldenpay.pg.merchant',
+                    'az.goldenpay.pg.merchant.plugin.mapper',
+                    'az.goldenpay.pg.merchant.model.mapper',
+                    'az.goldenpay.pg.merchant.component'
+            ]
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
+checkstyle {
+    toolVersion = '8.33'
+    configFile = 'checkstyle.xml' as File
+}
+
+tasks.withType(Checkstyle) {
+    reports {
+        xml.enabled false
+        html.enabled true
+    }
+}
+
+pmd {
+    consoleOutput = true
+    toolVersion = "6.21.0"
+    rulePriority = 5
+    ruleSets = ["pmd.xml"]
+}

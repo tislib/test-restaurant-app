@@ -1,0 +1,46 @@
+plugins {
+    id 'org.springframework.boot' version '2.3.9.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'io.freefair.lombok' version '5.1.0'
+    id 'jacoco'
+    id 'checkstyle'
+    id 'pmd'
+}
+
+apply from: 'gradle/checks.gradle';
+
+group = 'net.tislib.restaurantapp'
+version = '1.0'
+sourceCompatibility = '1.11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // spring boot and its dependencies
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+
+    //spring metrics
+    implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: micrometerVersion
+
+    // mapstruct
+    implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: mapstructVersion
+    annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion
+
+    // h2 embedded database for integration tests
+    testCompile group: 'com.h2database', name: 'h2', version: h2DbVersion
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
