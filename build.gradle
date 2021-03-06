@@ -22,8 +22,11 @@ dependencies {
     // spring boot and its dependencies
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+
+    // database
+    runtimeOnly 'org.postgresql:postgresql'
 
     //spring metrics
     implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: micrometerVersion
@@ -32,12 +35,12 @@ dependencies {
     implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: mapstructVersion
     annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion
 
-    // h2 embedded database for integration tests
-    testImplementation group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo'
+    implementation 'org.flywaydb:flyway-core'
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
+    // h2 embedded database for integration tests
+    testImplementation group: 'com.h2database', name: 'h2'
+
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
 }
 
 test {

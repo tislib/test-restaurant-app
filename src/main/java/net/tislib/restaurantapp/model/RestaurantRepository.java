@@ -1,6 +1,6 @@
 package net.tislib.restaurantapp.model;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RestaurantRepository extends MongoRepository<Restaurant, Long> {
+public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 }

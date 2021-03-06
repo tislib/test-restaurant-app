@@ -15,6 +15,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantRepository repository;
 
     public void create(final Restaurant restaurant) {
+        restaurant.setId(null);
         repository.save(restaurant);
     }
 

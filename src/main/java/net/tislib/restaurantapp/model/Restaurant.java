@@ -1,12 +1,15 @@
 package net.tislib.restaurantapp.model;
 
 import lombok.Data;
-import org.springframework.data.mongodb.core.mapping.Document;
+
+import javax.persistence.*;
 
 @Data
-@Document
+@Entity
 public class Restaurant {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
