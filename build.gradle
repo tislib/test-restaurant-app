@@ -23,7 +23,12 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+
+    // jwt token helper library
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 
     // database
     runtimeOnly 'org.postgresql:postgresql'
@@ -35,7 +40,11 @@ dependencies {
     implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: mapstructVersion
     annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion
 
-    implementation 'org.flywaydb:flyway-core'
+    // rest api documentation
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: springDocVersion
+
+    // database versioning
+    implementation group: 'org.flywaydb', name: 'flyway-core'
 
     // h2 embedded database for integration tests
     testImplementation group: 'com.h2database', name: 'h2'

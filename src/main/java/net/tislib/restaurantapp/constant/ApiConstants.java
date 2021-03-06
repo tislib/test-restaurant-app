@@ -1,4 +1,4 @@
-package net.tislib.restaurantapp.constants;
+package net.tislib.restaurantapp.constant;
 
 import lombok.experimental.UtilityClass;
 
@@ -13,6 +13,10 @@ public class ApiConstants {
     public static final String API_AUTHENTICATION = API_BASE_PATH + "/authentication";
     public static final String API_USERS = API_BASE_PATH + "/users";
     public static final String API_RESTAURANTS = API_BASE_PATH + "/restaurants";
+
+    // paths
+
+    public static final String PATH_TOKEN = "/token";
 
     // parameters
 
