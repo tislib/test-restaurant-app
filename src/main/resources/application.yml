@@ -1,0 +1,5 @@
+spring:
+  data:
+    mongodb:
+      database: restaurant
+      host: 127.0.0.1

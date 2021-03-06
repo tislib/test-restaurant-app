@@ -22,7 +22,7 @@ dependencies {
     // spring boot and its dependencies
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 
     //spring metrics
@@ -33,7 +33,7 @@ dependencies {
     annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion
 
     // h2 embedded database for integration tests
-    testCompile group: 'com.h2database', name: 'h2', version: h2DbVersion
+    testImplementation group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
