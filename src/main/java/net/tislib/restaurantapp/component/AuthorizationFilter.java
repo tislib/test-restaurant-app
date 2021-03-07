@@ -8,7 +8,6 @@ import net.tislib.restaurantapp.data.authentication.ErrorResponse;
 import net.tislib.restaurantapp.data.authentication.TokenAuthentication;
 import net.tislib.restaurantapp.service.AuthenticationService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -19,11 +18,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static net.tislib.restaurantapp.constant.SecurityConstants.AUTHORIZATION_HEADER_STRING;
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 @Log4j2
 @RequiredArgsConstructor
-@Order(HIGHEST_PRECEDENCE)
 public class AuthorizationFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();

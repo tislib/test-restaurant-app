@@ -7,6 +7,8 @@ import org.springframework.hateoas.RepresentationModel;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class UserResource extends RepresentationModel<TokenPair> {
+public class UserResource extends RepresentationModel<UserResource> {
+
+    private String email;
 
 }

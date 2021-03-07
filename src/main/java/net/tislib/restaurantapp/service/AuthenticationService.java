@@ -4,6 +4,7 @@ import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.data.authentication.TokenAuthentication;
 import net.tislib.restaurantapp.data.authentication.TokenCreateRequest;
 import net.tislib.restaurantapp.data.authentication.TokenPair;
+import net.tislib.restaurantapp.data.authentication.TokenUserDetails;
 import net.tislib.restaurantapp.data.authentication.UserRegistrationRequest;
 
 public interface AuthenticationService {
@@ -12,4 +13,8 @@ public interface AuthenticationService {
     UserResource register(UserRegistrationRequest request);
 
     TokenAuthentication getTokenAuthentication(String token);
+
+    TokenUserDetails getTokenInfo();
+
+    TokenPair.TokenDetails refresh(String refreshToken);
 }
