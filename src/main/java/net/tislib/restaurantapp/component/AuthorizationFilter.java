@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import net.tislib.restaurantapp.data.authentication.ErrorResponse;
 import net.tislib.restaurantapp.data.authentication.TokenAuthentication;
+import net.tislib.restaurantapp.service.AuthenticationService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,9 +24,10 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Log4j2
 @RequiredArgsConstructor
 @Order(HIGHEST_PRECEDENCE)
-public class JWTAuthorizationFilter extends OncePerRequestFilter {
+public class AuthorizationFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final AuthenticationService authenticationService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -52,18 +54,11 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
         String token = authorizationHeaderParts[1];
 
-        TokenAuthentication tokenAuthentication = getTokenAuthentication(token);
+        TokenAuthentication tokenAuthentication = authenticationService.getTokenAuthentication(token);
 
         SecurityContextHolder.getContext().setAuthentication(tokenAuthentication);
 
         chain.doFilter(request, response);
-    }
-
-    private TokenAuthentication getTokenAuthentication(String header) {
-        if (!header.equals("taleh123")) {
-            return null;
-        }
-        return new TokenAuthentication();
     }
 
     @SneakyThrows
