@@ -1,10 +1,12 @@
 package net.tislib.restaurantapp.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.data.authentication.TokenCreateRequest;
 import net.tislib.restaurantapp.data.authentication.TokenPair;
+import net.tislib.restaurantapp.data.authentication.TokenRefreshRequest;
 import net.tislib.restaurantapp.data.authentication.TokenUserDetails;
 import net.tislib.restaurantapp.data.authentication.UserRegistrationRequest;
 import net.tislib.restaurantapp.service.AuthenticationService;
@@ -29,21 +31,25 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @PostMapping(PATH_TOKEN)
+    @Operation(summary = "login", description = "authenticate user with credentials and create user")
     public TokenPair token(@RequestBody @Validated TokenCreateRequest tokenCreateRequest) {
         return service.token(tokenCreateRequest);
     }
 
     @GetMapping(PATH_TOKEN)
+    @Operation(summary = "current token info", description = "get current token info")
     public TokenUserDetails token() {
         return service.getTokenInfo();
     }
 
     @PatchMapping(PATH_TOKEN)
-    public TokenPair.TokenDetails refresh(@RequestBody @Validated String refreshToken) {
-        return service.refresh(refreshToken);
+    @Operation(summary = "refresh access token", description = "create new access token via refresh token")
+    public TokenPair.TokenDetails refresh(@RequestBody @Validated TokenRefreshRequest tokenRefreshRequest) {
+        return service.refresh(tokenRefreshRequest.getRefreshToken());
     }
 
     @PostMapping(PATH_REGISTER)
+    @Operation(summary = "register user", description = "user registration")
     public UserResource register(@RequestBody @Validated UserRegistrationRequest request) {
         return service.register(request);
     }

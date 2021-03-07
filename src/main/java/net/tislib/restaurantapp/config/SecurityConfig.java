@@ -1,4 +1,4 @@
-package net.tislib.restaurantapp;
+package net.tislib.restaurantapp.config;
 
 import lombok.RequiredArgsConstructor;
 import net.tislib.restaurantapp.component.AuthorizationFilter;
