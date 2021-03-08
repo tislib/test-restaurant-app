@@ -1,6 +1,7 @@
 package net.tislib.restaurantapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import net.tislib.restaurantapp.data.OwnerReplyResource;
@@ -13,7 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.math.BigDecimal;
 
 import static net.tislib.restaurantapp.constant.ApiConstants.API_REVIEWS;
 import static net.tislib.restaurantapp.constant.ApiConstants.PATH_ID;
@@ -34,7 +38,10 @@ public class ReviewController {
 
     @GetMapping
     @Operation(operationId = "reviewList", summary = "list reviews", description = "return list of all / filtered reviews")
-    public PageContainer<ReviewResource> list(@PathVariable Long restaurantId) {
+    public PageContainer<ReviewResource> list(@PathVariable Long restaurantId,
+
+                                              @Schema(description = "filter by rating")
+                                              @RequestParam BigDecimal rating) {
         return null;
     }
 

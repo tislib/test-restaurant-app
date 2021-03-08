@@ -35,7 +35,11 @@ public class RestaurantController {
 
     @GetMapping
     @Operation(operationId = "restaurantList", summary = "list restaurants", description = "return list of all / filtered restaurants")
-    public PageContainer<RestaurantResource> list(@Schema(description = "filter by rating option, ratings filter are rounded to integer") @RequestParam BigDecimal rating) {
+    public PageContainer<RestaurantResource> list(@Schema(description = "filter by rating option, ratings filter are rounded to integer")
+                                                  @RequestParam BigDecimal rating,
+
+                                                  @Schema(description = "filter by restaurant owner")
+                                                  @RequestParam Long ownerId) {
         return null;
     }
 
