@@ -17,7 +17,7 @@ public class ReviewResource extends Resource<ReviewResource> {
 
     @Min(1)
     @Max(5)
-    @Schema(required = true)
+    @Schema(required = true, example = "3")
     private short starCount;
 
     @NotBlank
@@ -25,7 +25,7 @@ public class ReviewResource extends Resource<ReviewResource> {
     private Instant dateOfVisit;
 
     @NotBlank
-    @Schema(required = true)
+    @Schema(required = true, example = "sample comment")
     private String comment;
 
     @NotBlank

@@ -33,20 +33,20 @@ public class ReviewController {
     }
 
     @GetMapping
-    @Operation(operationId = "restaurantList", summary = "list restaurants", description = "return list of all / filtered restaurants")
+    @Operation(operationId = "reviewList", summary = "list reviews", description = "return list of all / filtered reviews")
     public PageContainer<ReviewResource> list(@PathVariable Long restaurantId) {
         return null;
     }
 
     @GetMapping(PATH_ID)
-    @Operation(operationId = "restaurantGetById", summary = "get restaurant by id", description = "return single restaurant by id")
+    @Operation(operationId = "reviewGetById", summary = "get review by id", description = "return single review by id")
     public ReviewResource get(@PathVariable Long restaurantId,
                               @PathVariable Long id) {
         return null;
     }
 
     @PutMapping(PATH_ID)
-    @Operation(operationId = "restaurantUpdate", summary = "update restaurant", description = "update single restaurant")
+    @Operation(operationId = "reviewUpdate", summary = "update review", description = "update single review")
     public ReviewResource update(@PathVariable Long restaurantId,
                                  @PathVariable Long id,
                                  @RequestBody @Validated ReviewResource userResource) {
