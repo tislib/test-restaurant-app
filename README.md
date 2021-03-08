@@ -8,7 +8,14 @@ Architecture notes:
 4. Projection
 5. Access Control
 6. Spring Security
-
+7. *change username / password
 
 further optimization notes
-corretto docker image
+
+corretto 
+
+docker image 
+
+each user can rate website once
+
+__

@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.service.UserService;
-import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,11 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static net.tislib.restaurantapp.constant.ApiConstants.API_USERS;
+import static net.tislib.restaurantapp.constant.ApiConstants.PATH_ID;
 
 @RestController
 @RequestMapping(API_USERS)
 @RequiredArgsConstructor
-@Tag(name = "user", description = "endpoints related to user CRUD operations")
+@Tag(name = "users", description = "endpoints related to user CRUD operations")
 public class UserController {
 
     private final UserService userService;
@@ -38,14 +38,14 @@ public class UserController {
         return userService.list();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(PATH_ID)
     @Operation(operationId = "userGetById", summary = "get user by id", description = "return single user by its id")
     public UserResource get(@PathVariable Long id) {
         return userService.get(id);
     }
 
-    @PutMapping("/{id}")
-    @Operation(operationId = "updateUser", summary = "update user", description = "find user by id and replace it")
+    @PutMapping(PATH_ID)
+    @Operation(operationId = "userUpdate", summary = "update user", description = "find user by id and replace it")
     public UserResource update(@PathVariable Long id,
                                @RequestBody @Validated UserResource userResource) {
         return userService.update(id, userResource);
