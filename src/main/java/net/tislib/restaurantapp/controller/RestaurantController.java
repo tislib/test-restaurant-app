@@ -1,32 +1,44 @@
 package net.tislib.restaurantapp.controller;
 
 import lombok.RequiredArgsConstructor;
-import net.tislib.restaurantapp.model.Restaurant;
-import net.tislib.restaurantapp.service.RestaurantService;
+import net.tislib.restaurantapp.data.RestaurantResource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static net.tislib.restaurantapp.constant.ApiConstants.API_RESTAURANTS;
+
 @RestController
-@RequestMapping("/api/1.0/restaurants")
+@RequestMapping(API_RESTAURANTS)
 @RequiredArgsConstructor
 public class RestaurantController {
 
-    private final RestaurantService service;
-
     @PostMapping
-    public void create(final @RequestBody @Validated Restaurant restaurant) {
-        service.create(restaurant);
+    public RestaurantResource create(@RequestBody @Validated RestaurantResource userResource) {
+        return null;
     }
 
     @GetMapping
-    public List<Restaurant> list() {
-        return service.list();
+    public List<RestaurantResource> list() {
+        return null;
+    }
+
+    @GetMapping("/{id}")
+    public RestaurantResource get(@PathVariable Long id) {
+        return null;
+    }
+
+    @PutMapping("/{id}")
+    public RestaurantResource update(@PathVariable Long id,
+                               @RequestBody @Validated RestaurantResource userResource) {
+        return null;
     }
 
 }

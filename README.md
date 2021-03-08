@@ -8,3 +8,7 @@ Architecture notes:
 4. Projection
 5. Access Control
 6. Spring Security
+
+
+further optimization notes
+corretto docker image
