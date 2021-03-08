@@ -1,6 +1,7 @@
 package net.tislib.restaurantapp.controller;
 
 import lombok.RequiredArgsConstructor;
+import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.RestaurantResource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,8 +11,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 import static net.tislib.restaurantapp.constant.ApiConstants.API_RESTAURANTS;
 
@@ -26,7 +25,7 @@ public class RestaurantController {
     }
 
     @GetMapping
-    public List<RestaurantResource> list() {
+    public PageContainer<RestaurantResource> list() {
         return null;
     }
 

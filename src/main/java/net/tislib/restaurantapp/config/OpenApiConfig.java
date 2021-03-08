@@ -27,7 +27,10 @@ import org.springframework.context.annotation.Configuration;
         ),
         security = {
                 @SecurityRequirement(
-                        name = "apiKeyBearerAuth"
+                        name = "apiKeyBearerAuth",
+                        scopes = {
+                                "REGULAR", "OWNER", "ADMIN"
+                        }
                 )
         }
 )

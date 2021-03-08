@@ -1,7 +1,12 @@
 package net.tislib.restaurantapp.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.UserResource;
+import net.tislib.restaurantapp.service.UserService;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,34 +16,39 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 import static net.tislib.restaurantapp.constant.ApiConstants.API_USERS;
 
 @RestController
 @RequestMapping(API_USERS)
 @RequiredArgsConstructor
+@Tag(name = "user", description = "endpoints related to user CRUD operations")
 public class UserController {
 
+    private final UserService userService;
+
     @PostMapping
+    @Operation(operationId = "userCreate", summary = "create user", description = "create a new user")
     public UserResource create(@RequestBody @Validated UserResource userResource) {
         return null;
     }
 
     @GetMapping
-    public List<UserResource> list() {
-        return null;
+    @Operation(operationId = "userList", summary = "list users", description = "return list of all users")
+    public PageContainer<UserResource> list() {
+        return userService.list();
     }
 
     @GetMapping("/{id}")
+    @Operation(operationId = "userGetById", summary = "get user by id", description = "return single user by its id")
     public UserResource get(@PathVariable Long id) {
-        return null;
+        return userService.get(id);
     }
 
     @PutMapping("/{id}")
+    @Operation(operationId = "updateUser", summary = "update user", description = "find user by id and replace it")
     public UserResource update(@PathVariable Long id,
                                @RequestBody @Validated UserResource userResource) {
-        return null;
+        return userService.update(id, userResource);
     }
 
 }
