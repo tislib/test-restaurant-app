@@ -47,9 +47,8 @@ public class RestaurantReviewStatsServiceImpl implements RestaurantReviewStatsSe
 
                 repository.exclusiveUpdateReviewStats(reviewStats);
 
-                review.setComputed(true);
-
                 if (!reviewDeleted) {
+                    review.setComputed(true);
                     reviewRepository.save(review);
                 }
 

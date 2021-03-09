@@ -61,8 +61,8 @@ public class UserController {
 
     @DeleteMapping(PATH_ID)
     @Operation(operationId = "userDelete", summary = "delete user", description = "delete single user by id")
-    public UserResource delete(@PathVariable Long id) {
-        return service.delete(id);
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 
 }
