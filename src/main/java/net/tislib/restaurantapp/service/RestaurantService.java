@@ -1,11 +1,20 @@
 package net.tislib.restaurantapp.service;
 
+import net.tislib.restaurantapp.data.PageContainer;
+import net.tislib.restaurantapp.data.RestaurantResource;
 import net.tislib.restaurantapp.model.Restaurant;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface RestaurantService {
-    void create(Restaurant restaurant);
+    RestaurantResource create(RestaurantResource restaurant);
 
-    List<Restaurant> list();
+    PageContainer<RestaurantResource> list(BigDecimal rating, Long ownerId);
+
+    RestaurantResource get(Long id);
+
+    RestaurantResource update(Long id, RestaurantResource resource);
+
+    RestaurantResource delete(Long id);
 }

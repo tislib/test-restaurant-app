@@ -7,6 +7,7 @@ import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.service.UserService;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,31 +25,37 @@ import static net.tislib.restaurantapp.constant.ApiConstants.PATH_ID;
 @Tag(name = "users", description = "endpoints related to user CRUD operations")
 public class UserController {
 
-    private final UserService userService;
+    private final UserService service;
 
     @PostMapping
     @Operation(operationId = "userCreate", summary = "create user", description = "create a new user")
-    public UserResource create(@RequestBody @Validated UserResource userResource) {
-        return null;
+    public UserResource create(@RequestBody @Validated UserResource resource) {
+        return service.create(resource);
     }
 
     @GetMapping
     @Operation(operationId = "userList", summary = "list users", description = "return list of all users")
     public PageContainer<UserResource> list() {
-        return userService.list();
+        return service.list();
     }
 
     @GetMapping(PATH_ID)
     @Operation(operationId = "userGetById", summary = "get user by id", description = "return single user by its id")
     public UserResource get(@PathVariable Long id) {
-        return userService.get(id);
+        return service.get(id);
     }
 
     @PutMapping(PATH_ID)
     @Operation(operationId = "userUpdate", summary = "update user", description = "find user by id and replace it")
     public UserResource update(@PathVariable Long id,
                                @RequestBody @Validated UserResource userResource) {
-        return userService.update(id, userResource);
+        return service.update(id, userResource);
+    }
+
+    @DeleteMapping(PATH_ID)
+    @Operation(operationId = "userDelete", summary = "delete user", description = "delete single user by id")
+    public UserResource delete(@PathVariable Long id) {
+        return service.delete(id);
     }
 
 }

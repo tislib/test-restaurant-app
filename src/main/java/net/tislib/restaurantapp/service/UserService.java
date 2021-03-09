@@ -2,12 +2,15 @@ package net.tislib.restaurantapp.service;
 
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.UserResource;
-import org.springframework.data.domain.Page;
 
 public interface UserService {
+    UserResource create(UserResource resource);
+
     PageContainer<UserResource> list();
 
     UserResource get(Long id);
 
-    UserResource update(Long id, UserResource userResource);
+    UserResource update(Long id, UserResource resource);
+
+    UserResource delete(Long id);
 }

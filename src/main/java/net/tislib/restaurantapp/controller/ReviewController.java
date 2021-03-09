@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import net.tislib.restaurantapp.data.OwnerReplyResource;
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.ReviewResource;
+import net.tislib.restaurantapp.service.ReviewService;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,11 +31,13 @@ import static net.tislib.restaurantapp.constant.ApiConstants.PATH_OWNER_REPLY;
 @Tag(name = "reviews", description = "endpoints related to user CRUD operations")
 public class ReviewController {
 
+    private final ReviewService service;
+
     @PostMapping
     @Operation(operationId = "reviewCreate", summary = "create review", description = "create a new review")
     public ReviewResource create(@PathVariable Long restaurantId,
-                                 @RequestBody @Validated ReviewResource userResource) {
-        return null;
+                                 @RequestBody @Validated ReviewResource resource) {
+        return service.create(restaurantId, resource);
     }
 
     @GetMapping
@@ -42,22 +46,29 @@ public class ReviewController {
 
                                               @Schema(description = "filter by rating")
                                               @RequestParam BigDecimal rating) {
-        return null;
+        return service.list(restaurantId, rating);
     }
 
     @GetMapping(PATH_ID)
     @Operation(operationId = "reviewGetById", summary = "get review by id", description = "return single review by id")
     public ReviewResource get(@PathVariable Long restaurantId,
                               @PathVariable Long id) {
-        return null;
+        return service.getClass(restaurantId, id);
     }
 
     @PutMapping(PATH_ID)
     @Operation(operationId = "reviewUpdate", summary = "update review", description = "update single review")
     public ReviewResource update(@PathVariable Long restaurantId,
                                  @PathVariable Long id,
-                                 @RequestBody @Validated ReviewResource userResource) {
-        return null;
+                                 @RequestBody @Validated ReviewResource resource) {
+        return service.update(restaurantId, id, resource);
+    }
+
+    @DeleteMapping(PATH_ID)
+    @Operation(operationId = "reviewDelete", summary = "delete review", description = "delete single review by id")
+    public ReviewResource delete(@PathVariable Long restaurantId,
+                                 @PathVariable Long id) {
+        return service.delete(restaurantId, id);
     }
 
     @PutMapping(PATH_OWNER_REPLY)
@@ -65,7 +76,7 @@ public class ReviewController {
     public ReviewResource ownerReply(@PathVariable Long restaurantId,
                                      @PathVariable Long id,
                                      @RequestBody @Validated OwnerReplyResource ownerReplyResource) {
-        return null;
+        return service.updateOwnerReply(restaurantId, id, ownerReplyResource);
     }
 
 }

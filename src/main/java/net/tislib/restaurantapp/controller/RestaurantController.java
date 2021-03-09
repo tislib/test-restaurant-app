@@ -6,7 +6,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.RestaurantResource;
+import net.tislib.restaurantapp.service.RestaurantService;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,10 +29,12 @@ import static net.tislib.restaurantapp.constant.ApiConstants.PATH_ID;
 @Tag(name = "restaurants", description = "endpoints related to restaurant CRUD operations")
 public class RestaurantController {
 
+    private final RestaurantService service;
+
     @PostMapping
     @Operation(operationId = "restaurantCreate", summary = "create restaurant", description = "create a new restaurant")
-    public RestaurantResource create(@RequestBody @Validated RestaurantResource userResource) {
-        return null;
+    public RestaurantResource create(@RequestBody @Validated RestaurantResource resource) {
+        return service.create(resource);
     }
 
     @GetMapping
@@ -40,20 +44,26 @@ public class RestaurantController {
 
                                                   @Schema(description = "filter by restaurant owner")
                                                   @RequestParam Long ownerId) {
-        return null;
+        return service.list(rating, ownerId);
     }
 
     @GetMapping(PATH_ID)
     @Operation(operationId = "restaurantGetById", summary = "get restaurant by id", description = "return single restaurant by id")
     public RestaurantResource get(@PathVariable Long id) {
-        return null;
+        return service.get(id);
     }
 
     @PutMapping(PATH_ID)
     @Operation(operationId = "restaurantUpdate", summary = "update restaurant", description = "update single restaurant")
     public RestaurantResource update(@PathVariable Long id,
-                                     @RequestBody @Validated RestaurantResource userResource) {
-        return null;
+                                     @RequestBody @Validated RestaurantResource resource) {
+        return service.update(id, resource);
+    }
+
+    @DeleteMapping(PATH_ID)
+    @Operation(operationId = "restaurantDelete", summary = "delete restaurant", description = "delete singler restaurant by id")
+    public RestaurantResource delete(@PathVariable Long id) {
+        return service.delete(id);
     }
 
 }
