@@ -4,12 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldNameConstants;
-import net.tislib.restaurantapp.model.User;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.List;
 
 import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
@@ -37,8 +35,5 @@ public class RestaurantResource extends Resource<RestaurantResource> {
 
     @Schema(accessMode = READ_ONLY)
     private ReviewResource lowestRatedReview;
-
-    @Schema(accessMode = READ_ONLY)
-    private List<ReviewResource> lastReviews;
 
 }

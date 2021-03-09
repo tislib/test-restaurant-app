@@ -9,17 +9,22 @@ import net.tislib.restaurantapp.data.mapper.ReviewMapper;
 import net.tislib.restaurantapp.model.OwnerReply;
 import net.tislib.restaurantapp.model.Restaurant;
 import net.tislib.restaurantapp.model.Review;
+import net.tislib.restaurantapp.model.UserRole;
 import net.tislib.restaurantapp.model.repository.OwnerReplyRepository;
 import net.tislib.restaurantapp.model.repository.RestaurantRepository;
 import net.tislib.restaurantapp.model.repository.ReviewRepository;
+import net.tislib.restaurantapp.service.AuthenticationService;
 import net.tislib.restaurantapp.service.RestaurantReviewStatsService;
 import net.tislib.restaurantapp.service.ReviewService;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +36,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final OwnerReplyMapper ownerReplyMapper;
     private final RestaurantReviewStatsService reviewStatsService;
     private final OwnerReplyRepository ownerReplyRepository;
+    private final AuthenticationService authenticationService;
 
     @Override
     public ReviewResource create(Long restaurantId, ReviewResource resource) {
@@ -42,6 +48,8 @@ public class ReviewServiceImpl implements ReviewService {
         entity.setId(null);
         entity.setReviewTime(Instant.now());
         entity.setRestaurant(restaurantEntity);
+        entity.setUser(authenticationService.getCurrentUser());
+
         repository.save(entity);
 
         reviewStatsService.computeReview((short) 0, entity, false);
@@ -51,7 +59,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public PageContainer<ReviewResource> list(Long restaurantId, BigDecimal rating, Pageable pageable) {
-        return mapper.mapPage(repository.findAll(pageable));
+        return mapper.mapPage(repository.findAllByOrderByReviewTimeDesc(pageable));
     }
 
     @Override
@@ -77,6 +85,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         existingEntity.setReviewTime(Instant.now());
         existingEntity.setRestaurant(restaurantEntity);
+        existingEntity.setUser(authenticationService.getCurrentUser());
 
         repository.save(existingEntity);
 
@@ -89,6 +98,14 @@ public class ReviewServiceImpl implements ReviewService {
     public OwnerReplyResource updateOwnerReply(Long restaurantId, Long id, OwnerReplyResource resource) {
         Review existingEntity = repository.findByRestaurantIdAndId(restaurantId, id)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + id));
+
+        UserRole role = authenticationService.getCurrentUser().getRole();
+
+        if (role == UserRole.OWNER && !Objects.equals(
+                existingEntity.getRestaurant().getOwner().getId(),
+                authenticationService.getCurrentUser().getId())) {
+            throw new AuthorizationServiceException("owner user cannot reply to restaurant: " + restaurantId);
+        }
 
         // locate owner reply
         OwnerReply ownerReply = existingEntity.getOwnerReply();

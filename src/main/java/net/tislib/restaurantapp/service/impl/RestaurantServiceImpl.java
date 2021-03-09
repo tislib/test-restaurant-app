@@ -9,6 +9,7 @@ import net.tislib.restaurantapp.model.RestaurantReviewStats;
 import net.tislib.restaurantapp.model.repository.RestaurantRepository;
 import net.tislib.restaurantapp.model.repository.RestaurantReviewStatsRepository;
 import net.tislib.restaurantapp.service.RestaurantService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +39,8 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public PageContainer<RestaurantResource> list(BigDecimal rating, Long ownerId, Pageable pageable) {
-        return mapper.mapPage(repository.findAll(pageable));
+        Page<Restaurant> page = repository.findAllByOrderByReviewStatsRatingAverage(pageable);
+        return mapper.mapPage(page);
     }
 
     @Override
@@ -46,14 +48,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         Restaurant entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + id));
 
-        RestaurantReviewStats reviewStats = reviewStatsRepository.findByRestaurantId(id)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant review stats not found with restaurant id: " + id));
-
-        RestaurantResource resource = mapper.to(entity);
-
-        mapper.mapReviews(resource, reviewStats);
-
-        return resource;
+        return mapper.to(entity);
     }
 
     @Override

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.tislib.restaurantapp.data.UserResource;
 
 import java.time.Instant;
 
@@ -12,9 +13,10 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TokenUserDetails {
-    private String email;
 
     private Instant creationTime;
 
     private Instant expirationTime;
+
+    private UserResource user;
 }

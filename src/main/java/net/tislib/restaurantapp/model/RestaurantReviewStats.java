@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Version;
 import java.math.BigDecimal;
 
@@ -20,7 +21,7 @@ public class RestaurantReviewStats {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     private Restaurant restaurant;
 
     private BigDecimal ratingAverage = BigDecimal.ZERO;

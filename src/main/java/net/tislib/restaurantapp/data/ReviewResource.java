@@ -21,11 +21,8 @@ public class ReviewResource extends Resource<ReviewResource> {
     @Schema(accessMode = READ_ONLY)
     private Long id;
 
-    @NotNull
+    @Schema(accessMode = READ_ONLY)
     private UserResource user;
-
-    @NotNull
-    private RestaurantResource restaurant;
 
     @Min(1)
     @Max(5)

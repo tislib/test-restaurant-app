@@ -15,6 +15,7 @@ import net.tislib.restaurantapp.data.authentication.TokenCreateRequest;
 import net.tislib.restaurantapp.data.authentication.TokenPair;
 import net.tislib.restaurantapp.data.authentication.TokenPair.TokenDetails;
 import net.tislib.restaurantapp.data.authentication.TokenUserDetails;
+import net.tislib.restaurantapp.data.authentication.UserAuthority;
 import net.tislib.restaurantapp.data.authentication.UserRegistrationRequest;
 import net.tislib.restaurantapp.data.mapper.UserMapper;
 import net.tislib.restaurantapp.exception.UserAlreadyExistsException;
@@ -34,8 +35,9 @@ import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -52,6 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final String TOKEN_TYPE = "tokenType";
     private static final String EMAIL = "email";
     private static final String USER = "user";
+    private static final String USER_ROLE = "userRole";
     private static final String INVALID_TOKEN_TYPE_MESSAGE = "invalid token type is accepted: {}";
 
     @Value("${jwt.signKey}")
@@ -124,6 +127,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .setIssuedAt(new Date())
                         .setExpiration(Date.from(expiry))
                         .claim(USER, user)
+                        .claim(USER_ROLE, user.getRole())
                         .claim(EMAIL, user.getEmail())
                         .claim(TOKEN_TYPE, ACCESS)
                         .signWith(Keys.hmacShaKeyFor(jwtTokenSignKey.getBytes(StandardCharsets.UTF_8)))
@@ -188,7 +192,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             return TokenAuthentication.builder()
                     .name(body.get(EMAIL, String.class))
-                    .authorities(new HashSet<>())
+                    .authorities(Collections.singleton(UserAuthority.builder()
+                            .authority(body.get(USER_ROLE, String.class))
+                            .build()))
                     .principal(jwtData)
                     .details(body.get(USER))
                     .build();
@@ -211,11 +217,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Jwt<?, ?> jwtData = (Jwt<?, ?>) tokenAuthentication.getPrincipal();
         Claims claims = (Claims) jwtData.getBody();
 
+        User user = userRepository.findByEmail(claims.get(EMAIL, String.class)).orElseThrow();
+
         return TokenUserDetails.builder()
-                .email(claims.get(EMAIL, String.class))
+                .user(userMapper.to(user))
                 .creationTime(claims.getIssuedAt().toInstant())
                 .expirationTime(claims.getExpiration().toInstant())
                 .build();
+    }
+
+    @Override
+    public User getCurrentUser() {
+        TokenAuthentication tokenAuthentication = getCurrentAuthentication()
+                .orElseThrow(() -> new InsufficientAuthenticationException("request is not properly authenticated"));
+
+        Jwt<?, ?> jwtData = (Jwt<?, ?>) tokenAuthentication.getPrincipal();
+        Claims claims = (Claims) jwtData.getBody();
+
+        return userRepository.findByEmail(claims.get(EMAIL, String.class)).orElseThrow();
     }
 
     public Optional<TokenAuthentication> getCurrentAuthentication() {

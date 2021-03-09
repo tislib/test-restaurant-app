@@ -8,6 +8,7 @@ import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.service.UserService;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,7 @@ public class UserController {
 
     @PostMapping
     @Operation(operationId = "userCreate", summary = "create user", description = "create a new user")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public UserResource create(@RequestBody @Validated UserResource resource) {
         return service.create(resource);
     }
@@ -54,6 +56,7 @@ public class UserController {
 
     @PutMapping(PATH_ID)
     @Operation(operationId = "userUpdate", summary = "update user", description = "find user by id and replace it")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public UserResource update(@PathVariable Long id,
                                @RequestBody @Validated UserResource userResource) {
         return service.update(id, userResource);
@@ -61,6 +64,7 @@ public class UserController {
 
     @DeleteMapping(PATH_ID)
     @Operation(operationId = "userDelete", summary = "delete user", description = "delete single user by id")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

@@ -9,6 +9,7 @@ import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.ReviewResource;
 import net.tislib.restaurantapp.service.ReviewService;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,6 +66,7 @@ public class ReviewController {
 
     @PutMapping(PATH_ID)
     @Operation(operationId = "reviewUpdate", summary = "update review", description = "update single review")
+    @PreAuthorize("restaurantId('ADMIN')")
     public ReviewResource update(@PathVariable Long restaurantId,
                                  @PathVariable Long id,
                                  @RequestBody @Validated ReviewResource resource) {
@@ -72,6 +74,7 @@ public class ReviewController {
     }
 
     @DeleteMapping(PATH_ID)
+    @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(operationId = "reviewDelete", summary = "delete review", description = "delete single review by id")
     public void delete(@PathVariable Long restaurantId,
                                  @PathVariable Long id) {
@@ -79,6 +82,7 @@ public class ReviewController {
     }
 
     @PutMapping(PATH_OWNER_REPLY)
+    @PreAuthorize("hasAnyAuthority('OWNER', 'ADMIN')")
     @Operation(operationId = "ownerReply", summary = "reply to comment", description = "reply to comment or updated current reply")
     public OwnerReplyResource ownerReply(@PathVariable Long restaurantId,
                                      @PathVariable Long id,

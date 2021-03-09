@@ -8,6 +8,8 @@ import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.RestaurantResource;
 import net.tislib.restaurantapp.service.RestaurantService;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +36,7 @@ public class RestaurantController {
 
     @PostMapping
     @Operation(operationId = "restaurantCreate", summary = "create restaurant", description = "create a new restaurant")
+    @PreAuthorize("hasAnyAuthority('OWNER', 'ADMIN')")
     public RestaurantResource create(@RequestBody @Validated RestaurantResource resource) {
         return service.create(resource);
     }
@@ -61,6 +64,7 @@ public class RestaurantController {
     }
 
     @PutMapping(PATH_ID)
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(operationId = "restaurantUpdate", summary = "update restaurant", description = "update single restaurant")
     public RestaurantResource update(@PathVariable Long id,
                                      @RequestBody @Validated RestaurantResource resource) {
@@ -68,6 +72,7 @@ public class RestaurantController {
     }
 
     @DeleteMapping(PATH_ID)
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(operationId = "restaurantDelete", summary = "delete restaurant", description = "delete singler restaurant by id")
     public void delete(@PathVariable Long id) {
         service.delete(id);

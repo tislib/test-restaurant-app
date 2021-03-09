@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.tislib.restaurantapp.component.AuthorizationFilter;
 import net.tislib.restaurantapp.service.AuthenticationService;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -21,6 +22,7 @@ import static net.tislib.restaurantapp.constant.ApiConstants.PATH_ANT_MATCH_ALL;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final AuthenticationService authenticationService;
