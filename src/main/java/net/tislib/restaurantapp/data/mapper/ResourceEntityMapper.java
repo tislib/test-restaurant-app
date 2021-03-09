@@ -1,7 +1,6 @@
 package net.tislib.restaurantapp.data.mapper;
 
 import net.tislib.restaurantapp.data.PageContainer;
-import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.springframework.data.domain.Page;
 

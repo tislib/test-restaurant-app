@@ -6,24 +6,18 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.OneToOne;
 
 @Data
 @Entity
-@Table(name = "`user`", uniqueConstraints = {
-        @UniqueConstraint(name = "user_email_unique", columnNames = "email")
-})
-public class User {
+public class OwnerReply {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String email;
+    @OneToOne
+    private Review review;
 
-    private String password;
-
-    private UserRole role;
-
+    private String comment;
 }

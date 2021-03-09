@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.RestaurantResource;
 import net.tislib.restaurantapp.data.mapper.RestaurantMapper;
-import net.tislib.restaurantapp.model.Restaurant;
 import net.tislib.restaurantapp.model.repository.RestaurantRepository;
 import net.tislib.restaurantapp.service.RestaurantService;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 

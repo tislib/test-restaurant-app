@@ -3,7 +3,6 @@ package net.tislib.restaurantapp.service;
 import net.tislib.restaurantapp.data.OwnerReplyResource;
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.ReviewResource;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;

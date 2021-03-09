@@ -3,6 +3,7 @@ package net.tislib.restaurantapp.data;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldNameConstants;
 import net.tislib.restaurantapp.model.User;
 
 import java.math.BigDecimal;
@@ -12,8 +13,10 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@FieldNameConstants
 public class RestaurantResource extends Resource<RestaurantResource> {
 
+    @Schema(accessMode = READ_ONLY)
     private Long id;
 
     @Schema(description = "restaurant name")

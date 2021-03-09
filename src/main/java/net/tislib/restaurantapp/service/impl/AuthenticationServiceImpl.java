@@ -24,7 +24,6 @@ import net.tislib.restaurantapp.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,7 +32,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -54,6 +52,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final String TOKEN_TYPE = "tokenType";
     private static final String EMAIL = "email";
     private static final String USER = "user";
+    private static final String INVALID_TOKEN_TYPE_MESSAGE = "invalid token type is accepted: {}";
 
     @Value("${jwt.signKey}")
     private String jwtTokenSignKey;
@@ -161,7 +160,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String tokenType = body.get(TOKEN_TYPE, String.class);
 
         if (!REFRESH.equals(tokenType)) {
-            log.warn("invalid token type is accepted: {}", tokenType);
+            log.warn(INVALID_TOKEN_TYPE_MESSAGE, tokenType);
             throw new InsufficientAuthenticationException("different token is supplied");
         }
 
@@ -181,7 +180,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             String tokenType = body.get(TOKEN_TYPE, String.class);
 
             if (!ACCESS.equals(tokenType)) {
-                log.warn("invalid token type is accepted: {}", tokenType);
+                log.warn(INVALID_TOKEN_TYPE_MESSAGE, tokenType);
                 return null;
             }
 
@@ -193,7 +192,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .build();
         } catch (SignatureException e) {
             log.warn(e.getMessage(), e);
+            //CHECKSTYLE:OFF
         } catch (Throwable e) {
+            //CHECKSTYLE:ON
             log.debug(e.getMessage(), e);
         }
 
