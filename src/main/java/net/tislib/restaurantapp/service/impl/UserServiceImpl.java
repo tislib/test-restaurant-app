@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
 
         resource.setId(id);
         String previousPassword = existingEntity.getPassword();
-        mapper.mapTo(resource, existingEntity);
+        mapper.mapFrom(existingEntity, resource);
 
         // change password if password changed
         if (!StringUtils.isEmpty(resource.getPassword())) {

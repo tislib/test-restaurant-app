@@ -9,6 +9,7 @@ import net.tislib.restaurantapp.data.mapper.ReviewMapper;
 import net.tislib.restaurantapp.model.OwnerReply;
 import net.tislib.restaurantapp.model.Restaurant;
 import net.tislib.restaurantapp.model.Review;
+import net.tislib.restaurantapp.model.repository.OwnerReplyRepository;
 import net.tislib.restaurantapp.model.repository.RestaurantRepository;
 import net.tislib.restaurantapp.model.repository.ReviewRepository;
 import net.tislib.restaurantapp.service.RestaurantReviewStatsService;
@@ -29,6 +30,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewMapper mapper;
     private final OwnerReplyMapper ownerReplyMapper;
     private final RestaurantReviewStatsService reviewStatsService;
+    private final OwnerReplyRepository ownerReplyRepository;
 
     @Override
     public ReviewResource create(Long restaurantId, ReviewResource resource) {
@@ -71,7 +73,7 @@ public class ReviewServiceImpl implements ReviewService {
         short previousStarCount = existingEntity.getStarCount();
 
         resource.setId(null);
-        mapper.mapTo(resource, existingEntity);
+        mapper.mapFrom(existingEntity, resource);
 
         existingEntity.setReviewTime(Instant.now());
         existingEntity.setRestaurant(restaurantEntity);
@@ -94,13 +96,12 @@ public class ReviewServiceImpl implements ReviewService {
             ownerReply = new OwnerReply();
         }
 
-        ownerReplyMapper.mapTo(resource, existingEntity.getOwnerReply());
+        ownerReplyMapper.mapFrom(ownerReply, resource);
 
         // back reference
         ownerReply.setReview(existingEntity);
-        existingEntity.setOwnerReply(ownerReply);
 
-        repository.save(existingEntity);
+        ownerReplyRepository.save(ownerReply);
 
         return ownerReplyMapper.to(ownerReply);
     }

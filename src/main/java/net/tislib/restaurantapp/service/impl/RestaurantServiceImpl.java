@@ -62,7 +62,7 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + id));
 
         resource.setId(id);
-        mapper.mapTo(resource, existingEntity);
+        mapper.mapFrom(existingEntity, resource);
 
         repository.save(existingEntity);
 
