@@ -22,7 +22,11 @@ public class RestaurantReviewStats {
     @ManyToOne
     private Restaurant restaurant;
 
-    private BigDecimal averageRating;
+    private Long ratingAverage;
+
+    private Long ratingSum;
+
+    private Integer ratingCount;
 
     @ManyToOne
     private Review highestRatedReview;

@@ -10,7 +10,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring", uses = ReviewMapper.class)
 public interface RestaurantMapper extends ResourceEntityMapper<RestaurantResource, Restaurant> {
 
-    @Mapping(source = RestaurantReviewStats.Fields.averageRating, target = RestaurantResource.Fields.rating)
+    @Mapping(source = RestaurantReviewStats.Fields.ratingAverage, target = RestaurantResource.Fields.rating)
     void mapReviews(@MappingTarget RestaurantResource restaurant, RestaurantReviewStats reviewStats);
 
 }

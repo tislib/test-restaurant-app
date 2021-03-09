@@ -22,6 +22,9 @@ public class Review {
     @ManyToOne
     private User user;
 
+    @ManyToOne
+    private Restaurant restaurant;
+
     private short starCount;
 
     private String comment;
