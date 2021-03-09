@@ -141,8 +141,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         user = userRepository.save(user);
 
-        return userMapper.to(user)
-                .add(linkTo(methodOn(UserController.class).get(user.getId())).withSelfRel());
+        UserResource resource = userMapper.to(user);
+
+        return resource.add(linkTo(methodOn(UserController.class)
+                .get(user.getId())).withSelfRel());
     }
 
     private void validateRegistrationRequest(UserRegistrationRequest request) {

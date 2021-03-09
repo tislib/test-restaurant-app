@@ -46,7 +46,7 @@ public class ReviewController {
     public PageContainer<ReviewResource> list(@PathVariable Long restaurantId,
 
                                               @Schema(description = "filter by rating")
-                                              @RequestParam BigDecimal rating,
+                                              @RequestParam(required = false) BigDecimal rating,
 
                                               @Schema(description = "page number")
                                               @RequestParam(required = false, defaultValue = "0") int page,
@@ -60,7 +60,7 @@ public class ReviewController {
     @Operation(operationId = "reviewGetById", summary = "get review by id", description = "return single review by id")
     public ReviewResource get(@PathVariable Long restaurantId,
                               @PathVariable Long id) {
-        return service.getClass(restaurantId, id);
+        return service.get(restaurantId, id);
     }
 
     @PutMapping(PATH_ID)
@@ -73,14 +73,14 @@ public class ReviewController {
 
     @DeleteMapping(PATH_ID)
     @Operation(operationId = "reviewDelete", summary = "delete review", description = "delete single review by id")
-    public ReviewResource delete(@PathVariable Long restaurantId,
+    public void delete(@PathVariable Long restaurantId,
                                  @PathVariable Long id) {
-        return service.delete(restaurantId, id);
+        service.delete(restaurantId, id);
     }
 
     @PutMapping(PATH_OWNER_REPLY)
     @Operation(operationId = "ownerReply", summary = "reply to comment", description = "reply to comment or updated current reply")
-    public ReviewResource ownerReply(@PathVariable Long restaurantId,
+    public OwnerReplyResource ownerReply(@PathVariable Long restaurantId,
                                      @PathVariable Long id,
                                      @RequestBody @Validated OwnerReplyResource ownerReplyResource) {
         return service.updateOwnerReply(restaurantId, id, ownerReplyResource);

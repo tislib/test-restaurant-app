@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldNameConstants;
 import net.tislib.restaurantapp.model.User;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -20,10 +22,12 @@ public class RestaurantResource extends Resource<RestaurantResource> {
     private Long id;
 
     @Schema(description = "restaurant name")
+    @NotBlank
     private String name;
 
     @Schema(description = "restaurant owner")
-    private User owner;
+    @NotNull
+    private UserResource owner;
 
     @Schema(accessMode = READ_ONLY, description = "average rating for all reviews")
     private BigDecimal rating;

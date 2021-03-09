@@ -3,6 +3,7 @@ package net.tislib.restaurantapp.data;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldNameConstants;
 import net.tislib.restaurantapp.model.UserRole;
 import org.hibernate.validator.constraints.Length;
 
@@ -15,6 +16,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.WRITE_ONLY;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@FieldNameConstants
 public class UserResource extends Resource<UserResource> {
 
     @Schema(accessMode = READ_ONLY)

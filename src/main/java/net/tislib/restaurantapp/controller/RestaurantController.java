@@ -41,10 +41,10 @@ public class RestaurantController {
     @GetMapping
     @Operation(operationId = "restaurantList", summary = "list restaurants", description = "return list of all / filtered restaurants")
     public PageContainer<RestaurantResource> list(@Schema(description = "filter by rating option, ratings filter are rounded to integer")
-                                                  @RequestParam BigDecimal rating,
+                                                  @RequestParam(required = false) BigDecimal rating,
 
                                                   @Schema(description = "filter by restaurant owner")
-                                                  @RequestParam Long ownerId,
+                                                  @RequestParam(required = false) Long ownerId,
 
                                                   @Schema(description = "page number")
                                                   @RequestParam(required = false, defaultValue = "0") int page,
@@ -69,8 +69,8 @@ public class RestaurantController {
 
     @DeleteMapping(PATH_ID)
     @Operation(operationId = "restaurantDelete", summary = "delete restaurant", description = "delete singler restaurant by id")
-    public RestaurantResource delete(@PathVariable Long id) {
-        return service.delete(id);
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 
 }

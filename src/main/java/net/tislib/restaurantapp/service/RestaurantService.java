@@ -15,5 +15,5 @@ public interface RestaurantService {
 
     RestaurantResource update(Long id, RestaurantResource resource);
 
-    RestaurantResource delete(Long id);
+    void delete(Long id);
 }

@@ -36,4 +36,5 @@ public class Review {
     @OneToOne(mappedBy = "review")
     private OwnerReply ownerReply;
 
+    private boolean computed;
 }

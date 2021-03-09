@@ -12,11 +12,11 @@ public interface ReviewService {
 
     PageContainer<ReviewResource> list(Long restaurantId, BigDecimal rating, Pageable pageable);
 
-    ReviewResource getClass(Long restaurantId, Long id);
+    ReviewResource get(Long restaurantId, Long id);
 
     ReviewResource update(Long restaurantId, Long id, ReviewResource resource);
 
-    ReviewResource updateOwnerReply(Long restaurantId, Long id, OwnerReplyResource ownerReplyResource);
+    OwnerReplyResource updateOwnerReply(Long restaurantId, Long id, OwnerReplyResource ownerReplyResource);
 
-    ReviewResource delete(Long restaurantId, Long id);
+    void delete(Long restaurantId, Long id);
 }

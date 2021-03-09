@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.time.LocalDate;
 
@@ -20,8 +21,10 @@ public class ReviewResource extends Resource<ReviewResource> {
     @Schema(accessMode = READ_ONLY)
     private Long id;
 
+    @NotNull
     private UserResource user;
 
+    @NotNull
     private RestaurantResource restaurant;
 
     @Min(1)
@@ -37,11 +40,11 @@ public class ReviewResource extends Resource<ReviewResource> {
     @Schema(accessMode = READ_ONLY)
     private Instant reviewTime;
 
-    @NotBlank
+    @NotNull
     @Schema(required = true)
     private LocalDate dateOfVisit;
 
-    @NotBlank
     @Schema(accessMode = READ_ONLY)
     private OwnerReplyResource ownerReply;
+
 }
