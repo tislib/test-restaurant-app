@@ -1,6 +1,8 @@
 package net.tislib.restaurantapp.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import net.tislib.restaurantapp.controller.RestaurantController;
+import net.tislib.restaurantapp.controller.ReviewController;
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.RestaurantResource;
 import net.tislib.restaurantapp.data.mapper.RestaurantMapper;
@@ -16,10 +18,14 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @Service
 @RequiredArgsConstructor
 public class RestaurantServiceImpl implements RestaurantService {
 
+    public static final String REVIEWS = "reviews";
     private final RestaurantRepository repository;
     private final RestaurantMapper mapper;
     private final RestaurantReviewStatsRepository reviewStatsRepository;
@@ -40,7 +46,8 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public PageContainer<RestaurantResource> list(BigDecimal rating, Long ownerId, Pageable pageable) {
         Page<Restaurant> page = repository.findAllByOrderByReviewStatsRatingAverage(pageable);
-        return mapper.mapPage(page);
+        return mapper.mapPage(page)
+                .map(this::prepareRestaurantLinks);
     }
 
     @Override
@@ -48,7 +55,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         Restaurant entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + id));
 
-        return mapper.to(entity);
+        return prepareRestaurantLinks(mapper.to(entity));
     }
 
     @Override
@@ -70,6 +77,15 @@ public class RestaurantServiceImpl implements RestaurantService {
                 .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + id));
 
         repository.delete(entity);
+    }
+
+    private RestaurantResource prepareRestaurantLinks(RestaurantResource item) {
+        return item.add(
+                linkTo(methodOn(RestaurantController.class).get(item.getId()))
+                        .withSelfRel(),
+                linkTo(methodOn(ReviewController.class).list(item.getId(), null, 0, 25))
+                        .withRel(REVIEWS)
+        );
     }
 
 }

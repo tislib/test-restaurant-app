@@ -1,6 +1,8 @@
 package net.tislib.restaurantapp.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import net.tislib.restaurantapp.controller.ReviewController;
+import net.tislib.restaurantapp.controller.UserController;
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.data.mapper.UserMapper;
@@ -14,6 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +41,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageContainer<UserResource> list(Pageable pageable) {
-        return mapper.mapPage(repository.findAll(pageable));
+        return mapper.mapPage(repository.findAll(pageable))
+                .map(item -> item.add(linkTo(methodOn(UserController.class)
+                        .get(item.getId()))
+                        .withSelfRel()));
     }
 
     @Override
@@ -44,7 +52,10 @@ public class UserServiceImpl implements UserService {
         User entity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("user not found with id: " + id));
 
-        return mapper.to(entity);
+        return mapper.to(entity)
+                .add(linkTo(methodOn(UserController.class)
+                        .get(entity.getId()))
+                        .withSelfRel());
     }
 
     @Override

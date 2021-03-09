@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.RepresentationModel;
+import net.tislib.restaurantapp.data.Resource;
 
 import java.time.Instant;
 
@@ -14,7 +14,7 @@ import java.time.Instant;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TokenPair extends RepresentationModel<TokenPair> {
+public class TokenPair extends Resource<TokenPair> {
 
     private TokenDetails accessToken;
     private TokenDetails refreshToken;

@@ -3,7 +3,9 @@ package net.tislib.restaurantapp.data.authentication;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import net.tislib.restaurantapp.data.Resource;
 import net.tislib.restaurantapp.data.UserResource;
 
 import java.time.Instant;
@@ -12,7 +14,8 @@ import java.time.Instant;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TokenUserDetails {
+@EqualsAndHashCode(callSuper = false)
+public class TokenUserDetails extends Resource<TokenUserDetails> {
 
     private Instant creationTime;
 

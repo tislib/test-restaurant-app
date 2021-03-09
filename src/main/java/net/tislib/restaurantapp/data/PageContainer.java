@@ -8,6 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -25,4 +27,14 @@ public class PageContainer<T> extends Resource<PageContainer<T>> {
 
     @Schema(description = "total pages count")
     private long totalPages;
+
+    public <V> PageContainer<V> map(Function<T, V> mapper) {
+        return PageContainer.<V>builder()
+                .totalPages(totalPages)
+                .totalElements(totalElements)
+                .content(content.stream()
+                        .map(mapper)
+                        .collect(Collectors.toList()))
+                .build();
+    }
 }

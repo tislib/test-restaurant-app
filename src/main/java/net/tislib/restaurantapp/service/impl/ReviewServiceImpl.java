@@ -1,8 +1,11 @@
 package net.tislib.restaurantapp.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import net.tislib.restaurantapp.controller.RestaurantController;
+import net.tislib.restaurantapp.controller.ReviewController;
 import net.tislib.restaurantapp.data.OwnerReplyResource;
 import net.tislib.restaurantapp.data.PageContainer;
+import net.tislib.restaurantapp.data.RestaurantResource;
 import net.tislib.restaurantapp.data.ReviewResource;
 import net.tislib.restaurantapp.data.mapper.OwnerReplyMapper;
 import net.tislib.restaurantapp.data.mapper.ReviewMapper;
@@ -26,10 +29,15 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @Service
 @RequiredArgsConstructor
 public class ReviewServiceImpl implements ReviewService {
 
+    public static final String RESTAURANT = "restaurant";
+    public static final String REVIEW = "review";
     private final ReviewRepository repository;
     private final RestaurantRepository restaurantRepository;
     private final ReviewMapper mapper;
@@ -59,7 +67,8 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public PageContainer<ReviewResource> list(Long restaurantId, BigDecimal rating, Pageable pageable) {
-        return mapper.mapPage(repository.findAllByOrderByReviewTimeDesc(pageable));
+        return mapper.mapPage(repository.findAllByOrderByReviewTimeDesc(pageable))
+                .map(item -> prepareRestaurantLinks(restaurantId, item));
     }
 
     @Override
@@ -67,7 +76,7 @@ public class ReviewServiceImpl implements ReviewService {
         Review entity = repository.findByRestaurantIdAndId(restaurantId, id)
                 .orElseThrow(() -> new EntityNotFoundException("review not found with id: " + id));
 
-        return mapper.to(entity);
+        return prepareRestaurantLinks(restaurantId, mapper.to(entity));
     }
 
     @Override
@@ -120,7 +129,12 @@ public class ReviewServiceImpl implements ReviewService {
 
         ownerReplyRepository.save(ownerReply);
 
-        return ownerReplyMapper.to(ownerReply);
+        return ownerReplyMapper.to(ownerReply).add(
+                linkTo(methodOn(ReviewController.class).get(restaurantId, existingEntity.getId()))
+                        .withRel(REVIEW),
+                linkTo(methodOn(RestaurantController.class).get(restaurantId))
+                        .withRel(RESTAURANT)
+        );
     }
 
     @Override
@@ -134,5 +148,14 @@ public class ReviewServiceImpl implements ReviewService {
         existingEntity.setStarCount((short) 0);
 
         reviewStatsService.computeReview(previousStarCount, existingEntity, true);
+    }
+
+    private ReviewResource prepareRestaurantLinks(long restaurantId, ReviewResource item) {
+        return item.add(
+                linkTo(methodOn(ReviewController.class).get(restaurantId, item.getId()))
+                        .withSelfRel(),
+                linkTo(methodOn(RestaurantController.class).get(restaurantId))
+                        .withRel(RESTAURANT)
+        );
     }
 }

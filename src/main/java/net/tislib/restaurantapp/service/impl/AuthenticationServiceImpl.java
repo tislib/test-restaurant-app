@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.tislib.restaurantapp.controller.AuthenticationController;
 import net.tislib.restaurantapp.controller.UserController;
 import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.data.authentication.TokenAuthentication;
@@ -37,7 +38,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -56,6 +56,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final String USER = "user";
     private static final String USER_ROLE = "userRole";
     private static final String INVALID_TOKEN_TYPE_MESSAGE = "invalid token type is accepted: {}";
+    public static final String TOKEN_DETAILS = "tokenDetails";
 
     @Value("${jwt.signKey}")
     private String jwtTokenSignKey;
@@ -87,6 +88,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         tokenPair.setAccessToken(prepareAccessToken(user));
         tokenPair.setRefreshToken(prepareRefreshToken(user));
+
+        tokenPair.add(linkTo(methodOn(AuthenticationController.class).token())
+                .withRel(TOKEN_DETAILS));
 
         return tokenPair;
     }
@@ -220,10 +224,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userRepository.findByEmail(claims.get(EMAIL, String.class)).orElseThrow();
 
         return TokenUserDetails.builder()
-                .user(userMapper.to(user))
+                .user(userMapper.to(user)
+                        .add(linkTo(methodOn(UserController.class).get(user.getId())).withSelfRel()))
                 .creationTime(claims.getIssuedAt().toInstant())
                 .expirationTime(claims.getExpiration().toInstant())
-                .build();
+                .build()
+                .add(linkTo(methodOn(AuthenticationController.class).token()).withSelfRel());
     }
 
     @Override
