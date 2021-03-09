@@ -8,6 +8,7 @@ import net.tislib.restaurantapp.data.OwnerReplyResource;
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.ReviewResource;
 import net.tislib.restaurantapp.service.ReviewService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,8 +46,14 @@ public class ReviewController {
     public PageContainer<ReviewResource> list(@PathVariable Long restaurantId,
 
                                               @Schema(description = "filter by rating")
-                                              @RequestParam BigDecimal rating) {
-        return service.list(restaurantId, rating);
+                                              @RequestParam BigDecimal rating,
+
+                                              @Schema(description = "page number")
+                                              @RequestParam(required = false, defaultValue = "0") int page,
+
+                                              @Schema(description = "page size")
+                                              @RequestParam(required = false, defaultValue = "25") int pageSize) {
+        return service.list(restaurantId, rating, PageRequest.of(page, pageSize));
     }
 
     @GetMapping(PATH_ID)

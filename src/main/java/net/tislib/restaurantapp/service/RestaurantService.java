@@ -2,15 +2,15 @@ package net.tislib.restaurantapp.service;
 
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.RestaurantResource;
-import net.tislib.restaurantapp.model.Restaurant;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 public interface RestaurantService {
     RestaurantResource create(RestaurantResource restaurant);
 
-    PageContainer<RestaurantResource> list(BigDecimal rating, Long ownerId);
+    PageContainer<RestaurantResource> list(BigDecimal rating, Long ownerId, Pageable pageable);
 
     RestaurantResource get(Long id);
 

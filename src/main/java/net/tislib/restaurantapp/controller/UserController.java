@@ -1,11 +1,13 @@
 package net.tislib.restaurantapp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.service.UserService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static net.tislib.restaurantapp.constant.ApiConstants.API_USERS;
@@ -35,8 +38,12 @@ public class UserController {
 
     @GetMapping
     @Operation(operationId = "userList", summary = "list users", description = "return list of all users")
-    public PageContainer<UserResource> list() {
-        return service.list();
+    public PageContainer<UserResource> list(@Schema(description = "page number")
+                                            @RequestParam(required = false, defaultValue = "0") int page,
+
+                                            @Schema(description = "page size")
+                                            @RequestParam(required = false, defaultValue = "25") int pageSize) {
+        return service.list(PageRequest.of(page, pageSize));
     }
 
     @GetMapping(PATH_ID)
