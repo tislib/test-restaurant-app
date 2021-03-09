@@ -10,9 +10,11 @@ import net.tislib.restaurantapp.service.RestaurantReviewStatsService;
 import org.hibernate.StaleStateException;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.OptimisticLockException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -23,6 +25,16 @@ public class RestaurantReviewStatsServiceImpl implements RestaurantReviewStatsSe
     public static final int OPTIMISTIC_LOCK_MAX_RETRY_THRESHOLD = 10;
     private final RestaurantReviewStatsRepository repository;
     private final ReviewRepository reviewRepository;
+
+    @PostConstruct
+    public void init() {
+        recomputeNotComputedReviews();
+    }
+
+    private void recomputeNotComputedReviews() {
+        List<Review> notComputedReviews = reviewRepository.findByComputed(false);
+        notComputedReviews.forEach(review -> computeReview((short) 0, review, false));
+    }
 
     @Override
     public void computeReview(short previousStarCount, Review review, boolean reviewDeleted) {
@@ -36,7 +48,10 @@ public class RestaurantReviewStatsServiceImpl implements RestaurantReviewStatsSe
                 repository.exclusiveUpdateReviewStats(reviewStats);
 
                 review.setComputed(true);
-                reviewRepository.save(review);
+
+                if (!reviewDeleted) {
+                    reviewRepository.save(review);
+                }
 
                 return;
             } catch (OptimisticLockException | StaleStateException e) {
