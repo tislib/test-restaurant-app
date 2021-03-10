@@ -32,19 +32,19 @@ public class AuthenticationController {
 
     @PostMapping(PATH_TOKEN)
     @Operation(summary = "login", description = "authenticate user with credentials and create user")
-    public TokenPair token(@RequestBody @Validated TokenCreateRequest tokenCreateRequest) {
+    public TokenPair createToken(@RequestBody @Validated TokenCreateRequest tokenCreateRequest) {
         return service.token(tokenCreateRequest);
     }
 
     @GetMapping(PATH_TOKEN)
     @Operation(summary = "current token info", description = "get current token info")
-    public TokenUserDetails token() {
+    public TokenUserDetails getToken() {
         return service.getTokenInfo();
     }
 
     @PatchMapping(PATH_TOKEN)
     @Operation(summary = "refresh access token", description = "create new access token via refresh token")
-    public TokenPair.TokenDetails refresh(@RequestBody @Validated TokenRefreshRequest tokenRefreshRequest) {
+    public TokenPair.TokenDetails refreshToken(@RequestBody @Validated TokenRefreshRequest tokenRefreshRequest) {
         return service.refresh(tokenRefreshRequest.getRefreshToken());
     }
 

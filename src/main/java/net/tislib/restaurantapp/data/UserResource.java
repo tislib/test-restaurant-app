@@ -25,7 +25,7 @@ public class UserResource extends Resource<UserResource> {
     @NotBlank
     @Email
     @Schema(example = "talehsmail@gmail.com")
-    private String email;
+    private String c;
 
     @NotNull
     @Schema(example = "OWNER",

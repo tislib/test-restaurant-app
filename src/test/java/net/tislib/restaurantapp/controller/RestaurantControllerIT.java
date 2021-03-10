@@ -1,6 +1,7 @@
 package net.tislib.restaurantapp.controller;
 
 import net.tislib.restaurantapp.base.BaseIntegrationTest;
+import net.tislib.restaurantapp.base.TestUser;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultMatcher;
 
@@ -15,6 +16,8 @@ public class RestaurantControllerIT extends BaseIntegrationTest {
 
     @Test
     public void createRestaurantAndGetList() throws Exception {
+        auth(TestUser.ADMIN_USER);
+
         mockMvc.perform(post(STRING).content("{\"name\": \"restaurant-1\"}"))
                 .andExpect(ResultMatcher.matchAll(
                         status().is2xxSuccessful()

@@ -2,7 +2,7 @@ CREATE TABLE "user"
 (
     id       BIGSERIAL PRIMARY KEY,
     email    varchar(320),
-    role     varchar(32),
+    "role"     varchar(32),
     password varchar(255)
 );
 

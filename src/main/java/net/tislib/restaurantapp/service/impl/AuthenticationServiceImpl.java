@@ -75,22 +75,36 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @PostConstruct
     public void init() {
+        log.debug("initialize token parser");
         tokenParser = Jwts.parserBuilder()
                 .setSigningKey(jwtTokenSignKey.getBytes(StandardCharsets.UTF_8))
                 .build();
     }
 
     @Override
+    /*
+      This method is responsible for authentication by email and password
+      returning result contains
+     */
     public TokenPair token(TokenCreateRequest tokenCreateRequest) {
+        log.trace("token request / request user: {}", tokenCreateRequest.getEmail());
+
+        // authenticate user with credentials
         User user = authenticateUser(tokenCreateRequest);
 
+        log.debug("token request / user authenticated: {} {}", user.getEmail(), user.getId());
+
+        // tokenPair is a container for access and refresh tokens
         TokenPair tokenPair = new TokenPair();
 
         tokenPair.setAccessToken(prepareAccessToken(user));
         tokenPair.setRefreshToken(prepareRefreshToken(user));
 
-        tokenPair.add(linkTo(methodOn(AuthenticationController.class).token())
+        // prepare hateoas link token details endpoint
+        tokenPair.add(linkTo(methodOn(AuthenticationController.class).getToken())
                 .withRel(TOKEN_DETAILS));
+
+        log.info("token generated for user: {}", tokenCreateRequest.getEmail());
 
         return tokenPair;
     }
@@ -99,7 +113,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userRepository.findByEmail(tokenCreateRequest.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException(tokenCreateRequest.getEmail()));
 
+        log.debug("user found: {} {}", user.getEmail(), user.getId());
+
         if (!passwordEncoder.matches(tokenCreateRequest.getPassword(), user.getPassword())) {
+            log.info("password is wrong for user: {} {}", user.getEmail(), user.getId());
             throw new BadCredentialsException("username or password is incorrect");
         }
 
@@ -123,6 +140,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private TokenDetails prepareAccessToken(User user) {
+        log.debug("preparing access token for user: {}", user.getEmail());
+
         Instant expiry = Instant.now().plus(Duration.ofSeconds(jwtAccessTokenDurationSeconds));
 
         return TokenDetails.builder()
@@ -229,7 +248,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .creationTime(claims.getIssuedAt().toInstant())
                 .expirationTime(claims.getExpiration().toInstant())
                 .build()
-                .add(linkTo(methodOn(AuthenticationController.class).token()).withSelfRel());
+                .add(linkTo(methodOn(AuthenticationController.class).getToken()).withSelfRel());
     }
 
     @Override

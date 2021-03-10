@@ -11,6 +11,7 @@ public class ApiConstants {
 
     // resource paths
     public static final String API_SWAGGER_UI = "/swagger-ui";
+    public static final String API_h2_CONSOLE = "/h2-console";
     public static final String API_SWAGGER_API_DOCS = "/v3/api-docs";
     public static final String API_AUTHENTICATION = API_BASE_PATH + "/authentication";
     public static final String API_RESTAURANTS = API_BASE_PATH + "/restaurants";

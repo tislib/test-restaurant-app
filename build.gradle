@@ -49,8 +49,8 @@ dependencies {
     // database versioning
     implementation group: 'org.flywaydb', name: 'flyway-core'
 
-    // h2 embedded database for integration tests
-    testImplementation group: 'com.h2database', name: 'h2'
+    // h2 embedded database for integration tests and uat
+    implementation group: 'com.h2database', name: 'h2'
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
 }

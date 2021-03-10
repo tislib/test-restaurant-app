@@ -1,14 +1,9 @@
 INSERT INTO "user" (email, password, "role")
-VALUES ('user@app.com', '$2a$10$flDRghZ.GQ88S2NylLRj9OcOOqR2uy/YBuPyNQLFCPuwMd0sYhuja', 'REGULAR'),
-       ('owner@app.com', '$2a$10$nBRykE0Jhk4tA/IXiQL60etE5QyZsfvm5FifZNrktXAI7G/opFQPK', 'OWNER'),
+VALUES ('user1@app.com', '$2a$10$flDRghZ.GQ88S2NylLRj9OcOOqR2uy/YBuPyNQLFCPuwMd0sYhuja', 'REGULAR'),
+       ('user2@app.com', '$2a$10$flDRghZ.GQ88S2NylLRj9OcOOqR2uy/YBuPyNQLFCPuwMd0sYhuja', 'REGULAR'),
+       ('owner1@app.com', '$2a$10$nBRykE0Jhk4tA/IXiQL60etE5QyZsfvm5FifZNrktXAI7G/opFQPK', 'OWNER'),
        ('owner2@app.com', '$2a$10$nBRykE0Jhk4tA/IXiQL60etE5QyZsfvm5FifZNrktXAI7G/opFQPK', 'OWNER'),
-       ('admin@app.com', '$2a$10$Qa1ROlOgmXtvz6ZmHs7mlO9OKx9ARXql77RsuU/4xC2SxZrWnDJTm', 'ADMIN'),
-       ('talehsmail@gmail.com', '$2a$10$HLeGQrRb5P6GIHtCRG.4gO5iVCODzCGl9qbGZc9ajKVXdE.DHBklO', 'ADMIN');
-
--- 1 -> user123
--- 2 -> owner123
--- 3 -> owner123
--- 4 -> admin123
+       ('admin@app.com', '$2a$10$Qa1ROlOgmXtvz6ZmHs7mlO9OKx9ARXql77RsuU/4xC2SxZrWnDJTm', 'ADMIN');
 
 INSERT INTO "restaurant" (name, owner_id)
 VALUES ('restaurant1', 2),

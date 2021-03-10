@@ -20,6 +20,8 @@ each user can rate website once
 
 __
 
-PreAuthorize 
-security in BizLogic
-hateoas links
+PreAuthorize +
+security in BizLogic +
+hateoas links +
+
+comments and logging
