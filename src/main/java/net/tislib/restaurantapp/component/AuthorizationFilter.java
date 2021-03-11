@@ -32,6 +32,15 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                                     FilterChain chain) throws IOException, ServletException {
         String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER_STRING);
 
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Headers", "*");
+        response.setHeader("Access-Control-Allow-Methods", "*");
+
+        if (request.getMethod().equals("OPTIONS")) {
+            response.setStatus(200);
+            return;
+        }
+
         if (StringUtils.isBlank(authorizationHeader)) {
             chain.doFilter(request, response);
             return;
