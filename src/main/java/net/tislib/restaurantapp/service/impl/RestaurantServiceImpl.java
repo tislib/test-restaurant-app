@@ -8,8 +8,10 @@ import net.tislib.restaurantapp.data.RestaurantResource;
 import net.tislib.restaurantapp.data.mapper.RestaurantMapper;
 import net.tislib.restaurantapp.model.Restaurant;
 import net.tislib.restaurantapp.model.RestaurantReviewStats;
+import net.tislib.restaurantapp.model.UserRole;
 import net.tislib.restaurantapp.model.repository.RestaurantRepository;
 import net.tislib.restaurantapp.model.repository.RestaurantReviewStatsRepository;
+import net.tislib.restaurantapp.service.AuthenticationService;
 import net.tislib.restaurantapp.service.RestaurantService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,12 +31,19 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantRepository repository;
     private final RestaurantMapper mapper;
     private final RestaurantReviewStatsRepository reviewStatsRepository;
+    private final AuthenticationService authenticationService;
 
     public RestaurantResource create(final RestaurantResource resource) {
         Restaurant entity = mapper.from(resource);
         RestaurantReviewStats reviewStats = new RestaurantReviewStats();
 
         entity.setId(null);
+
+        // if user is not admin, sent owner as current user
+        if (authenticationService.getCurrentUser().getRole() != UserRole.ADMIN) {
+            entity.setOwner(authenticationService.getCurrentUser());
+        }
+
         repository.save(entity);
 
         reviewStats.setRestaurant(entity);
