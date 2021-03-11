@@ -11,6 +11,7 @@ import net.tislib.restaurantapp.data.authentication.TokenUserDetails;
 import net.tislib.restaurantapp.data.authentication.UserRegistrationRequest;
 import net.tislib.restaurantapp.service.AuthenticationService;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;

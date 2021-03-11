@@ -12,6 +12,9 @@ import {RestaurantComponent} from './pages/restaurant/restaurant.component';
 import {HeaderComponent} from './components/header/header.component';
 import {HeaderMobileComponent} from './components/header-mobile/header-mobile.component';
 import {LayoutComponent} from './components/layout/layout.component';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {TokenInterceptor} from './interceptor/token-interceptor';
+import {AuthenticationService} from './service/authentication-service';
 
 @NgModule({
   declarations: [
@@ -28,9 +31,17 @@ import {LayoutComponent} from './components/layout/layout.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    },
+    AuthenticationService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
