@@ -3,15 +3,12 @@ package net.tislib.restaurantapp.model.repository.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.tislib.restaurantapp.model.RestaurantReviewStats;
-import net.tislib.restaurantapp.model.Review;
 import net.tislib.restaurantapp.model.repository.RestaurantReviewStatsExtendedRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 @Repository
 @Log4j2

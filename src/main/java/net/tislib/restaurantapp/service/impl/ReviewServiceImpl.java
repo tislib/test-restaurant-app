@@ -5,7 +5,6 @@ import net.tislib.restaurantapp.controller.RestaurantController;
 import net.tislib.restaurantapp.controller.ReviewController;
 import net.tislib.restaurantapp.data.OwnerReplyResource;
 import net.tislib.restaurantapp.data.PageContainer;
-import net.tislib.restaurantapp.data.RestaurantResource;
 import net.tislib.restaurantapp.data.ReviewResource;
 import net.tislib.restaurantapp.data.mapper.OwnerReplyMapper;
 import net.tislib.restaurantapp.data.mapper.ReviewMapper;
@@ -20,7 +19,6 @@ import net.tislib.restaurantapp.service.AuthenticationService;
 import net.tislib.restaurantapp.service.RestaurantReviewStatsService;
 import net.tislib.restaurantapp.service.ReviewService;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.stereotype.Service;
 
@@ -48,8 +46,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResource create(Long restaurantId, ReviewResource resource) {
-        Restaurant restaurantEntity = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + restaurantId));
+        Restaurant restaurantEntity = getRestaurantEntity(restaurantId);
 
         Review entity = mapper.from(resource);
 
@@ -73,19 +70,16 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResource get(Long restaurantId, Long id) {
-        Review entity = repository.findByRestaurantIdAndId(restaurantId, id)
-                .orElseThrow(() -> new EntityNotFoundException("review not found with id: " + id));
+        Review entity = getReviewEntity(restaurantId, id);
 
         return prepareRestaurantLinks(restaurantId, mapper.to(entity));
     }
 
     @Override
     public ReviewResource update(Long restaurantId, Long id, ReviewResource resource) {
-        Restaurant restaurantEntity = restaurantRepository.findById(restaurantId)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + restaurantId));
+        Restaurant restaurantEntity = getRestaurantEntity(restaurantId);
 
-        Review existingEntity = repository.findByRestaurantIdAndId(restaurantId, id)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + id));
+        Review existingEntity = getReviewEntity(restaurantId, id);
 
         short previousStarCount = existingEntity.getStarCount();
 
@@ -107,8 +101,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public OwnerReplyResource updateOwnerReply(Long restaurantId, Long id, OwnerReplyResource resource) {
-        Review existingEntity = repository.findByRestaurantIdAndId(restaurantId, id)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + id));
+        Review existingEntity = getReviewEntity(restaurantId, id);
 
         UserRole role = authenticationService.getCurrentUser().getRole();
 
@@ -141,8 +134,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void delete(Long restaurantId, Long id) {
-        Review existingEntity = repository.findByRestaurantIdAndId(restaurantId, id)
-                .orElseThrow(() -> new EntityNotFoundException("review not found with id: " + id));
+        Review existingEntity = getReviewEntity(restaurantId, id);
 
         repository.delete(existingEntity);
 
@@ -159,5 +151,15 @@ public class ReviewServiceImpl implements ReviewService {
                 linkTo(methodOn(RestaurantController.class).get(restaurantId))
                         .withRel(RESTAURANT)
         );
+    }
+
+    private Review getReviewEntity(Long restaurantId, Long id) {
+        return repository.findByRestaurantIdAndId(restaurantId, id)
+                .orElseThrow(() -> new EntityNotFoundException("review not found with id: " + id));
+    }
+
+    private Restaurant getRestaurantEntity(Long restaurantId) {
+        return restaurantRepository.findById(restaurantId)
+                .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + restaurantId));
     }
 }

@@ -1,4 +1,4 @@
-resource "kubernetes_service" "universal-grabber-backend-api2" {
+resource "kubernetes_service" "restaurant-app-ui" {
   metadata {
     name = var.base_name
 
@@ -16,7 +16,7 @@ resource "kubernetes_service" "universal-grabber-backend-api2" {
     port {
       name        = "http"
       port        = 80
-      node_port = 30003
+      node_port = 30693
       target_port = 8080
     }
   }

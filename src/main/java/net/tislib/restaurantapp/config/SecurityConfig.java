@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import static net.tislib.restaurantapp.constant.ApiConstants.API_AUTHENTICATION;
 import static net.tislib.restaurantapp.constant.ApiConstants.API_SWAGGER_API_DOCS;
 import static net.tislib.restaurantapp.constant.ApiConstants.API_SWAGGER_UI;
-import static net.tislib.restaurantapp.constant.ApiConstants.API_h2_CONSOLE;
+import static net.tislib.restaurantapp.constant.ApiConstants.API_H2_CONSOLE;
 import static net.tislib.restaurantapp.constant.ApiConstants.PATH_ANT_MATCH_ALL;
 
 @EnableWebSecurity
@@ -60,8 +60,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // swagger documentation urls are allowed publicly
                 .antMatchers(API_SWAGGER_UI,
                         API_SWAGGER_UI + PATH_ANT_MATCH_ALL,
-                        API_h2_CONSOLE + PATH_ANT_MATCH_ALL,
-                        API_h2_CONSOLE,
+                        API_H2_CONSOLE + PATH_ANT_MATCH_ALL,
+                        API_H2_CONSOLE,
                         API_SWAGGER_API_DOCS,
                         API_SWAGGER_API_DOCS + PATH_ANT_MATCH_ALL,
                         API_SWAGGER_UI + PATH_ANT_MATCH_ALL).permitAll()

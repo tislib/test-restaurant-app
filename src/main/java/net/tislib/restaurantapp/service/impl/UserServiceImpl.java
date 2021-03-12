@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResource create(UserResource resource) {
-        validateUser(null, null);
+        validateUser(resource, null);
 
         User entity = mapper.from(resource);
 
@@ -59,13 +59,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResource get(Long id) {
-        User entity = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("user not found with id: " + id));
+        User entity = getEntity(id);
 
         return mapper.to(entity)
                 .add(linkTo(methodOn(UserController.class)
                         .get(entity.getId()))
                         .withSelfRel());
+    }
+
+    private User getEntity(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("user not found with id: " + id));
     }
 
     @Override

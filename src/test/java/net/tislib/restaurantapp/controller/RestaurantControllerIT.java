@@ -2,6 +2,8 @@ package net.tislib.restaurantapp.controller;
 
 import net.tislib.restaurantapp.base.BaseIntegrationTest;
 import net.tislib.restaurantapp.base.TestUser;
+import net.tislib.restaurantapp.data.RestaurantResource;
+import net.tislib.restaurantapp.data.UserResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultMatcher;
 
@@ -15,16 +17,18 @@ public class RestaurantControllerIT extends BaseIntegrationTest {
     public static final String STRING = "/api/1.0/restaurants";
 
     @Test
-    public void createRestaurantAndGetList() throws Exception {
+    public void createRestaurantAndGet200Success() throws Exception {
         auth(TestUser.ADMIN_USER);
 
-        mockMvc.perform(post(STRING).content("{\"name\": \"restaurant-1\"}"))
+        RestaurantResource resource = new RestaurantResource();
+        resource.setName("restaurant-1");
+        resource.setOwner(currentUser);
+
+        mockMvc.perform(post(STRING).content(jsonContent(resource)))
                 .andExpect(ResultMatcher.matchAll(
                         status().is2xxSuccessful()
-                ));
-
-        mockMvc.perform(get(STRING))
-                .andExpect(jsonPath("[0].name").value("restaurant-1"));
+                ))
+                .andExpect(jsonPath("$.name").value("restaurant-1"));
     }
 
 }

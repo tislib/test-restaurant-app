@@ -33,6 +33,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class RestaurantServiceImpl implements RestaurantService {
 
     public static final String REVIEWS = "reviews";
+    public static final String USER_NOT_EXISTS_MESSAGE = "user not exists";
     private final RestaurantRepository repository;
     private final RestaurantMapper mapper;
     private final UserMapper userMapper;
@@ -52,7 +53,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         } else {
             // check owner user exists
             if (resource.getOwner().getId() == null || userRepository.findById(entity.getOwner().getId()).isEmpty()) {
-                throw new InvalidFieldException("owner", "user not exists");
+                throw new InvalidFieldException(RestaurantResource.Fields.owner, USER_NOT_EXISTS_MESSAGE);
             }
         }
 
@@ -74,16 +75,14 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public RestaurantResource get(Long id) {
-        Restaurant entity = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + id));
+        Restaurant entity = getEntity(id);
 
         return prepareRestaurantLinks(mapper.to(entity));
     }
 
     @Override
     public RestaurantResource update(Long id, RestaurantResource resource) {
-        Restaurant existingEntity = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + id));
+        Restaurant existingEntity = getEntity(id);
         RestaurantResource existingResource = mapper.to(existingEntity);
 
         resource.setId(id);
@@ -94,10 +93,10 @@ public class RestaurantServiceImpl implements RestaurantService {
         } else {
             // check owner user exists
             if (resource.getOwner().getId() == null) {
-                throw new InvalidFieldException("owner", "user not set");
+                throw new InvalidFieldException(RestaurantResource.Fields.owner, "user not set");
             }
 
-            User user = userRepository.findById(resource.getOwner().getId()).orElseThrow(() -> new InvalidFieldException("owner", "user not exists"));
+            User user = userRepository.findById(resource.getOwner().getId()).orElseThrow(() -> new InvalidFieldException("owner", USER_NOT_EXISTS_MESSAGE));
             resource.setOwner(userMapper.to(user));
         }
 
@@ -110,10 +109,14 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public void delete(Long id) {
-        Restaurant entity = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + id));
+        Restaurant entity = getEntity(id);
 
         repository.delete(entity);
+    }
+
+    private Restaurant getEntity(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + id));
     }
 
     private RestaurantResource prepareRestaurantLinks(RestaurantResource item) {

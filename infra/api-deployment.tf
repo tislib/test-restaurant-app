@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "universal-grabber-backend-api2" {
+resource "kubernetes_deployment" "restaurant-app-api" {
   metadata {
     name = var.base_name
 

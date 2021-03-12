@@ -3,7 +3,7 @@ variable "DOCKER_IMG_TAG" {}
 variable "base_name" {
   type        = string
   description = "Base name"
-  default     = ""
+  default     = "restaurant-app"
 }
 
 locals {

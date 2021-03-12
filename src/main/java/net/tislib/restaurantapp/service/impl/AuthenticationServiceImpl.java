@@ -49,6 +49,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Log4j2
 public class AuthenticationServiceImpl implements AuthenticationService {
 
+    public static final String TOKEN_DETAILS = "tokenDetails";
+    public static final String INVALID_AUTHENTICATION_MESSAGE = "request is not properly authenticated";
+
     private static final String ACCESS = "access";
     private static final String REFRESH = "refresh";
     private static final String TOKEN_TYPE = "tokenType";
@@ -56,7 +59,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final String USER = "user";
     private static final String USER_ROLE = "userRole";
     private static final String INVALID_TOKEN_TYPE_MESSAGE = "invalid token type is accepted: {}";
-    public static final String TOKEN_DETAILS = "tokenDetails";
+    public static final String BAD_CREDENTIALS_MESSAGE = "username or password is incorrect";
 
     @Value("${jwt.signKey}")
     private String jwtTokenSignKey;
@@ -111,13 +114,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private User authenticateUser(TokenCreateRequest tokenCreateRequest) {
         User user = userRepository.findByEmail(tokenCreateRequest.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException(tokenCreateRequest.getEmail()));
+                .orElseThrow(() -> new BadCredentialsException(BAD_CREDENTIALS_MESSAGE));
 
         log.debug("user found: {} {}", user.getEmail(), user.getId());
 
         if (!passwordEncoder.matches(tokenCreateRequest.getPassword(), user.getPassword())) {
             log.info("password is wrong for user: {} {}", user.getEmail(), user.getId());
-            throw new BadCredentialsException("username or password is incorrect");
+            throw new BadCredentialsException(BAD_CREDENTIALS_MESSAGE);
         }
 
         return user;
@@ -236,7 +239,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public TokenUserDetails getTokenInfo() {
         TokenAuthentication tokenAuthentication = getCurrentAuthentication()
-                .orElseThrow(() -> new InsufficientAuthenticationException("request is not properly authenticated"));
+                .orElseThrow(() -> new InsufficientAuthenticationException(INVALID_AUTHENTICATION_MESSAGE));
 
         Jwt<?, ?> jwtData = (Jwt<?, ?>) tokenAuthentication.getPrincipal();
         Claims claims = (Claims) jwtData.getBody();
@@ -255,7 +258,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public User getCurrentUser() {
         TokenAuthentication tokenAuthentication = getCurrentAuthentication()
-                .orElseThrow(() -> new InsufficientAuthenticationException("request is not properly authenticated"));
+                .orElseThrow(() -> new InsufficientAuthenticationException(INVALID_AUTHENTICATION_MESSAGE));
 
         Jwt<?, ?> jwtData = (Jwt<?, ?>) tokenAuthentication.getPrincipal();
         Claims claims = (Claims) jwtData.getBody();
