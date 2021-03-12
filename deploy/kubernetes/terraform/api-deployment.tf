@@ -1,29 +1,29 @@
 resource "kubernetes_deployment" "restaurant-app-api" {
   metadata {
-    name = var.base_name
+    name = var.api_base_name
 
     labels = {
-      app = var.base_name
+      app = var.api_base_name
     }
   }
   spec {
     selector {
       match_labels = {
-        app = var.base_name
+        app = var.api_base_name
       }
     }
 
     template {
       metadata {
-        name = var.base_name
+        name = var.api_base_name
 
         labels = {
-          app = var.base_name
+          app = var.api_base_name
         }
       }
       spec {
         container {
-          name  = var.base_name
+          name  = var.api_base_name
           image = local.service_image
 
           env {
