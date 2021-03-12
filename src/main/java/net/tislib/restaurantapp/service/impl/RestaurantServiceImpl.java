@@ -7,11 +7,15 @@ import net.tislib.restaurantapp.controller.UserController;
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.RestaurantResource;
 import net.tislib.restaurantapp.data.mapper.RestaurantMapper;
+import net.tislib.restaurantapp.data.mapper.UserMapper;
+import net.tislib.restaurantapp.exception.InvalidFieldException;
 import net.tislib.restaurantapp.model.Restaurant;
 import net.tislib.restaurantapp.model.RestaurantReviewStats;
+import net.tislib.restaurantapp.model.User;
 import net.tislib.restaurantapp.model.UserRole;
 import net.tislib.restaurantapp.model.repository.RestaurantRepository;
 import net.tislib.restaurantapp.model.repository.RestaurantReviewStatsRepository;
+import net.tislib.restaurantapp.model.repository.UserRepository;
 import net.tislib.restaurantapp.service.AuthenticationService;
 import net.tislib.restaurantapp.service.RestaurantService;
 import org.springframework.data.domain.Page;
@@ -31,8 +35,10 @@ public class RestaurantServiceImpl implements RestaurantService {
     public static final String REVIEWS = "reviews";
     private final RestaurantRepository repository;
     private final RestaurantMapper mapper;
+    private final UserMapper userMapper;
     private final RestaurantReviewStatsRepository reviewStatsRepository;
     private final AuthenticationService authenticationService;
+    private final UserRepository userRepository;
 
     public RestaurantResource create(final RestaurantResource resource) {
         Restaurant entity = mapper.from(resource);
@@ -43,6 +49,11 @@ public class RestaurantServiceImpl implements RestaurantService {
         // if user is not admin, sent owner as current user
         if (authenticationService.getCurrentUser().getRole() != UserRole.ADMIN) {
             entity.setOwner(authenticationService.getCurrentUser());
+        } else {
+            // check owner user exists
+            if (resource.getOwner().getId() == null || userRepository.findById(entity.getOwner().getId()).isEmpty()) {
+                throw new InvalidFieldException("owner", "user not exists");
+            }
         }
 
         repository.save(entity);
@@ -80,7 +91,16 @@ public class RestaurantServiceImpl implements RestaurantService {
         // if user is not admin, rollback owner changes
         if (authenticationService.getCurrentUser().getRole() != UserRole.ADMIN) {
             resource.setOwner(existingResource.getOwner());
+        } else {
+            // check owner user exists
+            if (resource.getOwner().getId() == null) {
+                throw new InvalidFieldException("owner", "user not set");
+            }
+
+            User user = userRepository.findById(resource.getOwner().getId()).orElseThrow(() -> new InvalidFieldException("owner", "user not exists"));
+            resource.setOwner(userMapper.to(user));
         }
+
         mapper.mapFrom(existingEntity, resource);
 
         repository.save(existingEntity);

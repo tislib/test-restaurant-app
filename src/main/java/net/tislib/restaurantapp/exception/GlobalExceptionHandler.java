@@ -83,6 +83,20 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidFieldException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidFieldException(InvalidFieldException exception) {
+        ErrorResponse response = new ErrorResponse(exception.getMessage(), Collections.singleton(
+                FieldError.builder()
+                        .name(exception.getFieldName())
+                        .message(exception.getMessage())
+                        .build()
+        ));
+
+        log.warn(exception.getMessage(), exception);
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
         Set<String> rejectedFieldNames = new HashSet<>();
@@ -105,4 +119,5 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+
 }

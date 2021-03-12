@@ -19,6 +19,10 @@ export class RestaurantService {
     return this.httpClient.post<Restaurant>(this.baseUrl, resource);
   }
 
+  public update(id: number, resource: Restaurant): Observable<Restaurant> {
+    return this.httpClient.put<Restaurant>(this.byIdUrl(id), resource);
+  }
+
   public list(params?: HttpParams | {
     [param: string]: string | string[];
   }): Observable<PageContainer<Restaurant>> {
@@ -29,5 +33,9 @@ export class RestaurantService {
 
   public get(id: number): Observable<Restaurant> {
     return this.httpClient.get<Restaurant>(this.byIdUrl(id));
+  }
+
+  delete(id: number): Observable<void> {
+    return this.httpClient.delete<void>(this.byIdUrl(id));
   }
 }

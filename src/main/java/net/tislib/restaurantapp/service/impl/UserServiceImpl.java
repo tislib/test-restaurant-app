@@ -1,18 +1,17 @@
 package net.tislib.restaurantapp.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import net.tislib.restaurantapp.controller.ReviewController;
 import net.tislib.restaurantapp.controller.UserController;
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.data.mapper.UserMapper;
+import net.tislib.restaurantapp.exception.InvalidFieldException;
 import net.tislib.restaurantapp.model.User;
 import net.tislib.restaurantapp.model.UserRole;
 import net.tislib.restaurantapp.model.repository.UserRepository;
 import net.tislib.restaurantapp.service.AuthenticationService;
 import net.tislib.restaurantapp.service.UserService;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +20,7 @@ import org.springframework.util.StringUtils;
 import javax.persistence.EntityNotFoundException;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -36,6 +36,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResource create(UserResource resource) {
+        validateUser(null, null);
+
         User entity = mapper.from(resource);
 
         entity.setPassword(passwordEncoder.encode(resource.getPassword()));
@@ -71,6 +73,8 @@ public class UserServiceImpl implements UserService {
         User existingEntity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("user not found with id: " + id));
 
+        validateUser(resource, existingEntity);
+
         resource.setId(id);
         String previousPassword = existingEntity.getPassword();
         mapper.mapFrom(existingEntity, resource);
@@ -86,6 +90,19 @@ public class UserServiceImpl implements UserService {
         repository.save(existingEntity);
 
         return get(resource.getId());
+    }
+
+    private void validateUser(UserResource resource, User existingEntity) {
+        Optional<User> userOptional = repository.findByEmail(resource.getEmail());
+
+        if (userOptional.isEmpty()) {
+            return;
+        }
+
+        // check if email is already exists and used by different user
+        if (!Objects.equals(userOptional.get().getId(), existingEntity.getId())) {
+            throw new InvalidFieldException("email", "this email is already used by another user");
+        }
     }
 
     @Override

@@ -4,6 +4,7 @@ import {API_USER} from '../const/paths';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {PageContainer} from '../resource/base/page-container';
+import {Restaurant} from '../resource/restaurant.resource';
 
 @Injectable()
 export class UserService {
@@ -17,6 +18,10 @@ export class UserService {
 
   public create(resource: User): Observable<User> {
     return this.httpClient.post<User>(this.baseUrl, resource);
+  }
+
+  public update(id: number, resource: User): Observable<User> {
+    return this.httpClient.put<User>(this.byIdUrl(id), resource);
   }
 
   public list(): Observable<PageContainer<User>> {
