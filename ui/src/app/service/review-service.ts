@@ -18,11 +18,19 @@ export class ReviewService {
     return this.httpClient.post<Review>(this.baseUrl(restaurantId), resource);
   }
 
+  public update(restaurantId: number, reviewId: number, resource: Review): Observable<Review> {
+    return this.httpClient.put<Review>(this.byIdUrl(restaurantId, reviewId), resource);
+  }
+
   public list(restaurantId: number, pageSize: number, page: number): Observable<PageContainer<Review>> {
     return this.httpClient.get<PageContainer<Review>>(this.baseUrl(restaurantId) + `?pageSize=${pageSize}&page=${page}`);
   }
 
-  public get(restaurantId: number, id: number): Observable<Review> {
-    return this.httpClient.get<Review>(this.baseUrl(restaurantId) + '/' + id);
+  public get(restaurantId: number, reviewId: number): Observable<Review> {
+    return this.httpClient.get<Review>(this.byIdUrl(restaurantId, reviewId));
+  }
+
+  public delete(restaurantId: number, reviewId: number): Observable<void> {
+    return this.httpClient.delete<void>(this.byIdUrl(restaurantId, reviewId));
   }
 }

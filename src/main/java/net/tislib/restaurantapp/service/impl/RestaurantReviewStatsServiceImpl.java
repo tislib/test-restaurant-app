@@ -72,28 +72,28 @@ public class RestaurantReviewStatsServiceImpl implements RestaurantReviewStatsSe
         reviewStats.setRatingAverage(BigDecimal.valueOf(reviewStats.getRatingSum())
                 .divide(BigDecimal.valueOf(reviewStats.getRatingCount()), 2, RoundingMode.FLOOR));
 
-        if (reviewStats.getLowestRatedReview() == null || reviewStats.getLowestRatedReview().getStarCount() > review.getStarCount()) {
-            reviewStats.setLowestRatedReview(review);
-        }
+        if (!reviewDeleted) {
+            if (reviewStats.getLowestRatedReview() == null || reviewStats.getLowestRatedReview().getStarCount() > review.getStarCount()) {
+                reviewStats.setLowestRatedReview(review);
+            }
 
-        if (reviewStats.getHighestRatedReview() == null || reviewStats.getHighestRatedReview().getStarCount() < review.getStarCount()) {
-            reviewStats.setHighestRatedReview(review);
-        }
-
-        if (reviewDeleted) {
+            if (reviewStats.getHighestRatedReview() == null || reviewStats.getHighestRatedReview().getStarCount() < review.getStarCount()) {
+                reviewStats.setHighestRatedReview(review);
+            }
+        } else {
             // if we are removing lowest rated review
-            if (Objects.equals(reviewStats.getLowestRatedReview().getId(), review.getId())) {
+            if (reviewStats.getLowestRatedReview() != null &&  Objects.equals(reviewStats.getLowestRatedReview().getId(), review.getId())) {
                 Review lowestRatedRecord = reviewRepository.findFirstByRestaurantIdOrderByStarCountAsc(reviewStats.getRestaurant().getId())
                         .orElse(null);
 
                 reviewStats.setLowestRatedReview(lowestRatedRecord);
             }
 
-            if (Objects.equals(reviewStats.getHighestRatedReview().getId(), review.getId())) {
+            if (reviewStats.getHighestRatedReview() != null && Objects.equals(reviewStats.getHighestRatedReview().getId(), review.getId())) {
                 Review lowestRatedRecord = reviewRepository.findFirstByRestaurantIdOrderByStarCountDesc(reviewStats.getRestaurant().getId())
                         .orElse(null);
 
-                reviewStats.setLowestRatedReview(lowestRatedRecord);
+                reviewStats.setHighestRatedReview(lowestRatedRecord);
             }
         }
     }

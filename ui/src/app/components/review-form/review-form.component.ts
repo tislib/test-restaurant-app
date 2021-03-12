@@ -12,6 +12,7 @@ export class ReviewFormComponent implements OnInit {
 
   public review: Review = this.initReview();
   public errors: Map<string, string> = new Map<string, string>();
+  public create = true;
 
   @Input()
   public restaurantId = 0;
@@ -25,10 +26,18 @@ export class ReviewFormComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  create(): void {
+  save(): void {
     this.errors.clear();
 
-    this.service.create(this.restaurantId, this.review).subscribe(() => {
+    let api$;
+
+    if (this.create) {
+      api$ = this.service.create(this.restaurantId, this.review);
+    } else {
+      api$ = this.service.update(this.restaurantId, this.review.id, this.review);
+    }
+
+    api$.subscribe(() => {
       this.review = this.initReview();
       this.update.next();
     }, err => {

@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,6 +49,15 @@ public class GlobalExceptionHandler {
         log.error(exception.getMessage(), exception);
 
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException exception) {
+        ErrorResponse response = new ErrorResponse(exception.getMessage());
+
+        log.debug(exception.getMessage(), exception);
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

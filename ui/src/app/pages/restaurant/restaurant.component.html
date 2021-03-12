@@ -76,8 +76,8 @@
               </div>
               <div class="card-body">
                 <div>
-                  <button>edit</button>
-                  <button>delete</button>
+                  <button (click)="edit(restaurant.id, item.id)">edit</button>
+                  <button (click)="delete(restaurant.id, item.id)">delete</button>
                 </div>
                 <pre>
                   {{item.comment}}
