@@ -51,6 +51,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     public static final String TOKEN_DETAILS = "tokenDetails";
     public static final String INVALID_AUTHENTICATION_MESSAGE = "request is not properly authenticated";
+    public static final String BAD_CREDENTIALS_MESSAGE = "username or password is incorrect";
 
     private static final String ACCESS = "access";
     private static final String REFRESH = "refresh";
@@ -59,7 +60,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final String USER = "user";
     private static final String USER_ROLE = "userRole";
     private static final String INVALID_TOKEN_TYPE_MESSAGE = "invalid token type is accepted: {}";
-    public static final String BAD_CREDENTIALS_MESSAGE = "username or password is incorrect";
 
     @Value("${jwt.signKey}")
     private String jwtTokenSignKey;

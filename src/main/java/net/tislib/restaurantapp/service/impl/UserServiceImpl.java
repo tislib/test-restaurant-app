@@ -74,8 +74,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResource update(Long id, UserResource resource) {
-        User existingEntity = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("user not found with id: " + id));
+        User existingEntity = getEntity(id);
 
         validateUser(resource, existingEntity);
 
@@ -111,8 +110,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id) {
-        User existingEntity = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("user not found with id: " + id));
+        User existingEntity = getEntity(id);
 
         if (Objects.equals(existingEntity.getId(), authenticationService.getCurrentUser().getId())) {
             throw new IllegalArgumentException("you cannot remove own user");

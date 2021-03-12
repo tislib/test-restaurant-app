@@ -25,6 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 public class BaseIntegrationTest {
 
+    public static final String APPLICATION_JSON = "application/json";
     protected final MockMvcExtended mockMvc = new MockMvcExtended();
 
     @Autowired
@@ -42,7 +43,7 @@ public class BaseIntegrationTest {
             return mockMvcMain.perform(servletContext -> {
                 MockHttpServletRequest res = requestBuilder.buildRequest(servletContext);
                 res.addHeader("Authorization", "Bearer " + accessToken);
-                res.setContentType("application/json");
+                res.setContentType(APPLICATION_JSON);
                 return res;
             });
         }
@@ -72,7 +73,7 @@ public class BaseIntegrationTest {
         tokenCreateRequest.setPassword(testUser.getPassword());
 
         String content = mockMvcMain.perform(post(API_AUTHENTICATION + PATH_TOKEN)
-                .contentType("application/json")
+                .contentType(APPLICATION_JSON)
                 .content(jsonContent(tokenCreateRequest)))
                 .andReturn()
                 .getResponse()
