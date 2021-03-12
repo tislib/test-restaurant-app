@@ -6,11 +6,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum TestUser {
-    REGULAR_USER_1("user@testapp.com", "admin123"),
-    REGULAR_OWNER_1("owner@testapp.com", "admin123"),
-    REGULAR_OWNER_2("owner2@testapp.com", "admin123"),
-    ADMIN_USER("admin@testapp.com", "admin123");
+    REGULAR_USER_1("user@testapp.com", Constants.ADMIN_123),
+    REGULAR_OWNER_1("owner@testapp.com", Constants.ADMIN_123),
+    REGULAR_OWNER_2("owner2@testapp.com", Constants.ADMIN_123),
+    ADMIN_USER("admin@testapp.com", Constants.ADMIN_123);
 
     private final String email;
     private final String password;
+
+    private static class Constants {
+        public static final String ADMIN_123 = "admin123";
+    }
 }
