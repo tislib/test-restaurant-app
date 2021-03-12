@@ -2,8 +2,9 @@ import {Resource} from './base/resource';
 
 export interface User extends Resource {
   id: number;
-  totalPages: string;
+  email: string;
   role: UserRole;
+  fullName: string;
   password: string;
 }
 

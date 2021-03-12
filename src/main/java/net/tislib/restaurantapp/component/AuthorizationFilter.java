@@ -69,9 +69,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
     @SneakyThrows
     private void sendError(HttpServletResponse response, String message) {
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setException("AuthenticationException");
-        errorResponse.setMessage(message);
+        ErrorResponse errorResponse = new ErrorResponse(message);
         log.warn(message);
 
         response.setStatus(403);

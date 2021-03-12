@@ -30,6 +30,9 @@ public class RestaurantResource extends Resource<RestaurantResource> {
     @Schema(accessMode = READ_ONLY, description = "average rating for all reviews")
     private BigDecimal rating;
 
+    @Schema(accessMode = READ_ONLY, description = "average rating for all reviews")
+    private int ratingCount;
+
     @Schema(accessMode = READ_ONLY)
     private ReviewResource highestRatedReview;
 

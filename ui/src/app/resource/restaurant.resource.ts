@@ -7,6 +7,7 @@ export interface Restaurant extends Resource {
   name: string;
   owner: User;
   rating: number;
+  ratingCount: number;
   highestRatedReview: Review;
   lowestRatedReview: Review;
 }

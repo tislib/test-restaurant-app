@@ -56,7 +56,7 @@ public class UserController {
 
     @PutMapping(PATH_ID)
     @Operation(operationId = "userUpdate", summary = "update user", description = "find user by id and replace it")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public UserResource update(@PathVariable Long id,
                                @RequestBody @Validated UserResource userResource) {
         return service.update(id, userResource);
@@ -64,7 +64,7 @@ public class UserController {
 
     @DeleteMapping(PATH_ID)
     @Operation(operationId = "userDelete", summary = "delete user", description = "delete single user by id")
-    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }

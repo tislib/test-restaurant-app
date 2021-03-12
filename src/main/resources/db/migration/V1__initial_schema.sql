@@ -1,9 +1,10 @@
 CREATE TABLE "user"
 (
-    id       BIGSERIAL PRIMARY KEY,
-    email    varchar(320),
-    "role"     varchar(32),
-    password varchar(255)
+    id        BIGSERIAL PRIMARY KEY,
+    email     varchar(320),
+    full_name varchar(320),
+    "role"    varchar(32),
+    password  varchar(255)
 );
 
 CREATE TABLE "restaurant"

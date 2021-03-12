@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {TokenUserDetails} from '../../resource/authentication/token-user-details.resource';
+import {AuthenticationService} from '../../service/authentication-service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -7,9 +10,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HeaderComponent implements OnInit {
 
-  constructor() { }
+  public tokenDetails?: TokenUserDetails;
 
-  ngOnInit(): void {
+  constructor(private authService: AuthenticationService, private router: Router) {
   }
 
+  ngOnInit(): void {
+    this.authService.getToken().subscribe(tokenDetails => {
+      this.tokenDetails = tokenDetails;
+    });
+  }
+
+  logout(): void {
+    this.authService.logout();
+  }
 }

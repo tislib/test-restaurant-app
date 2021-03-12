@@ -25,3 +25,9 @@ security in BizLogic +
 hateoas links +
 
 comments and logging
+
+- ui changes
+    - login page
+    - restaurant page
+    - review list
+    - add review

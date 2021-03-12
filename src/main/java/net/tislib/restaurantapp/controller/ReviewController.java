@@ -66,7 +66,7 @@ public class ReviewController {
 
     @PutMapping(PATH_ID)
     @Operation(operationId = "reviewUpdate", summary = "update review", description = "update single review")
-    @PreAuthorize("restaurantId('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ReviewResource update(@PathVariable Long restaurantId,
                                  @PathVariable Long id,
                                  @RequestBody @Validated ReviewResource resource) {
@@ -74,7 +74,7 @@ public class ReviewController {
     }
 
     @DeleteMapping(PATH_ID)
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Operation(operationId = "reviewDelete", summary = "delete review", description = "delete single review by id")
     public void delete(@PathVariable Long restaurantId,
                                  @PathVariable Long id) {

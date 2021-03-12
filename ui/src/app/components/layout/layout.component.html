@@ -6,7 +6,9 @@
     <!--begin::Wrapper-->
     <div class="d-flex flex-column flex-row-fluid wrapper" id="kt_wrapper">
       <app-header></app-header>
-      <ng-content></ng-content>
+      <div class="layout-content">
+        <ng-content></ng-content>
+      </div>
       <app-footer></app-footer>
     </div>
     <!--end::Wrapper-->

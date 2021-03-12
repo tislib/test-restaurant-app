@@ -11,6 +11,7 @@ public interface RestaurantMapper extends ResourceEntityMapper<RestaurantResourc
     @Mapping(source = "reviewStats.ratingAverage", target = "rating")
     @Mapping(source = "reviewStats.highestRatedReview", target = "highestRatedReview")
     @Mapping(source = "reviewStats.lowestRatedReview", target = "lowestRatedReview")
+    @Mapping(source = "reviewStats.ratingCount", target = "ratingCount")
     RestaurantResource to(Restaurant entity);
 
 }

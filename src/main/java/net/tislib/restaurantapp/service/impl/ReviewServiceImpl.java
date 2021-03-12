@@ -67,7 +67,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public PageContainer<ReviewResource> list(Long restaurantId, BigDecimal rating, Pageable pageable) {
-        return mapper.mapPage(repository.findAllByOrderByReviewTimeDesc(pageable))
+        return mapper.mapPage(repository.findAllByRestaurantIdOrderByReviewTimeDesc(restaurantId, pageable))
                 .map(item -> prepareRestaurantLinks(restaurantId, item));
     }
 
@@ -90,11 +90,12 @@ public class ReviewServiceImpl implements ReviewService {
         short previousStarCount = existingEntity.getStarCount();
 
         resource.setId(null);
+        resource.setReviewTime(Instant.now());
+
         mapper.mapFrom(existingEntity, resource);
 
         existingEntity.setReviewTime(Instant.now());
         existingEntity.setRestaurant(restaurantEntity);
-        existingEntity.setUser(authenticationService.getCurrentUser());
 
         repository.save(existingEntity);
 

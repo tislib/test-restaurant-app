@@ -27,6 +27,10 @@ public class UserResource extends Resource<UserResource> {
     @Schema(example = "talehsmail@gmail.com")
     private String email;
 
+    @NotBlank
+    @Schema(example = "Taleh Ibrahimli")
+    private String fullName;
+
     @NotNull
     @Schema(example = "OWNER",
             description = "user role: REGULAR for ordinary users; OWNER for restaurant owners; ADMIN for administrators")

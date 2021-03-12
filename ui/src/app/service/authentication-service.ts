@@ -1,6 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {TokenCreateRequest} from '../resource/authentication/token-create-request.resource';
-import {Observable} from 'rxjs';
+import {Observable, of, Subject} from 'rxjs';
 import {TokenPair} from '../resource/authentication/token-pair.resource';
 import {API_AUTHENTICATION, PATH_REGISTER, PATH_TOKEN} from '../const/paths';
 import {TokenUserDetails} from '../resource/authentication/token-user-details.resource';
@@ -10,9 +10,12 @@ import {User} from '../resource/user.resource';
 import {Injectable} from '@angular/core';
 import {TokenDetailsResource} from '../resource/authentication/token-details.resource';
 import {Router} from '@angular/router';
+import {catchError, map} from 'rxjs/operators';
 
 @Injectable()
 export class AuthenticationService {
+
+  private tokenDetails?: TokenUserDetails;
 
   public constructor(private httpClient: HttpClient, private router: Router) {
   }
@@ -21,8 +24,12 @@ export class AuthenticationService {
     return this.httpClient.post<TokenPair>(API_AUTHENTICATION + PATH_TOKEN, request);
   }
 
-  public getToken(): Observable<TokenUserDetails> {
-    return this.httpClient.get<TokenUserDetails>(API_AUTHENTICATION + PATH_TOKEN);
+  public getToken(forceCheck: boolean = false): Observable<TokenUserDetails> {
+    if (!this.tokenDetails || forceCheck) {
+      return this.httpClient.get<TokenUserDetails>(API_AUTHENTICATION + PATH_TOKEN);
+    }
+
+    return of(this.tokenDetails);
   }
 
   public refreshToken(request: TokenRefreshRequest): Observable<TokenDetailsResource> {
@@ -30,7 +37,7 @@ export class AuthenticationService {
   }
 
   public register(request: UserRegistrationRequest): Observable<User> {
-    return this.httpClient.patch<User>(API_AUTHENTICATION + PATH_REGISTER, request);
+    return this.httpClient.post<User>(API_AUTHENTICATION + PATH_REGISTER, request);
   }
 
   getAccessToken(): string {
@@ -53,28 +60,36 @@ export class AuthenticationService {
     localStorage.removeItem('refresh_token_expiry');
   }
 
-  validateToken(): void {
+  refreshAndValidateToken(): Observable<boolean> {
     const refreshToken = localStorage.getItem('refresh_token') as string;
 
     if (!refreshToken) {
       this.cleanupAndRedirectToLogin();
+      return of(true);
     }
 
-    this.refreshToken({
+    return this.refreshToken({
       refreshToken
-    }).subscribe((tokenDetails) => {
+    }).pipe(map((tokenDetails) => {
       // ok
       localStorage.setItem('access_token', tokenDetails.content);
       localStorage.setItem('access_token_expiry', tokenDetails.expiry as string);
-    }, () => {
-      this.cleanupAndRedirectToLogin();
-    });
 
+      return true;
+    }), catchError(() => {
+      this.cleanupAndRedirectToLogin();
+
+      return of(false);
+    }));
 
   }
 
   private cleanupAndRedirectToLogin(): void {
     this.clearToken();
     this.router.navigate(['/login']);
+  }
+
+  logout(): void {
+    this.cleanupAndRedirectToLogin();
   }
 }

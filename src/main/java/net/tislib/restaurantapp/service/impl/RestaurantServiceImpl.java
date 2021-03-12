@@ -3,6 +3,7 @@ package net.tislib.restaurantapp.service.impl;
 import lombok.RequiredArgsConstructor;
 import net.tislib.restaurantapp.controller.RestaurantController;
 import net.tislib.restaurantapp.controller.ReviewController;
+import net.tislib.restaurantapp.controller.UserController;
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.RestaurantResource;
 import net.tislib.restaurantapp.data.mapper.RestaurantMapper;
@@ -55,6 +56,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public PageContainer<RestaurantResource> list(BigDecimal rating, Long ownerId, Pageable pageable) {
         Page<Restaurant> page = repository.findAllByOrderByReviewStatsRatingAverage(pageable);
+
         return mapper.mapPage(page)
                 .map(this::prepareRestaurantLinks);
     }
@@ -71,8 +73,14 @@ public class RestaurantServiceImpl implements RestaurantService {
     public RestaurantResource update(Long id, RestaurantResource resource) {
         Restaurant existingEntity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + id));
+        RestaurantResource existingResource = mapper.to(existingEntity);
 
         resource.setId(id);
+
+        // if user is not admin, rollback owner changes
+        if (authenticationService.getCurrentUser().getRole() != UserRole.ADMIN) {
+            resource.setOwner(existingResource.getOwner());
+        }
         mapper.mapFrom(existingEntity, resource);
 
         repository.save(existingEntity);
@@ -89,6 +97,11 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     private RestaurantResource prepareRestaurantLinks(RestaurantResource item) {
+        item.getOwner().add(
+                linkTo(methodOn(UserController.class).get(item.getOwner().getId()))
+                        .withSelfRel()
+        );
+
         return item.add(
                 linkTo(methodOn(RestaurantController.class).get(item.getId()))
                         .withSelfRel(),

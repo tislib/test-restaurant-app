@@ -7,15 +7,20 @@ import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.data.mapper.UserMapper;
 import net.tislib.restaurantapp.model.User;
+import net.tislib.restaurantapp.model.UserRole;
 import net.tislib.restaurantapp.model.repository.UserRepository;
+import net.tislib.restaurantapp.service.AuthenticationService;
 import net.tislib.restaurantapp.service.UserService;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.EntityNotFoundException;
+
+import java.util.Objects;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -27,6 +32,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository repository;
     private final UserMapper mapper;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final AuthenticationService authenticationService;
 
     @Override
     public UserResource create(UserResource resource) {
@@ -34,6 +40,8 @@ public class UserServiceImpl implements UserService {
 
         entity.setPassword(passwordEncoder.encode(resource.getPassword()));
         entity.setId(null);
+        entity.setRole(UserRole.REGULAR);
+
         repository.save(entity);
 
         return get(entity.getId());
@@ -84,6 +92,10 @@ public class UserServiceImpl implements UserService {
     public void delete(Long id) {
         User existingEntity = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("user not found with id: " + id));
+
+        if (Objects.equals(existingEntity.getId(), authenticationService.getCurrentUser().getId())) {
+            throw new IllegalArgumentException("you cannot remove own user");
+        }
 
         repository.delete(existingEntity);
     }
