@@ -33,21 +33,21 @@ public class RestaurantReviewStatsServiceImpl implements RestaurantReviewStatsSe
 
     private void recomputeNotComputedReviews() {
         List<Review> notComputedReviews = reviewRepository.findByComputed(false);
-        notComputedReviews.forEach(review -> computeReview((short) 0, review, false));
+        notComputedReviews.forEach(review -> computeReview((short) 0, review, 1));
     }
 
     @Override
-    public void computeReview(short previousStarCount, Review review, boolean reviewDeleted) {
+    public void computeReview(short previousStarCount, Review review, int countDiff) {
         RestaurantReviewStats reviewStats = repository.findByRestaurantId(review.getRestaurant().getId())
                 .orElseThrow();
 
         for (int i = 0; i < OPTIMISTIC_LOCK_MAX_RETRY_THRESHOLD; i++) {
             try {
-                calculateState(reviewStats, previousStarCount, review, reviewDeleted);
+                calculateState(reviewStats, previousStarCount, review, countDiff);
 
                 repository.exclusiveUpdateReviewStats(reviewStats);
 
-                if (!reviewDeleted) {
+                if (countDiff >= 0) {
                     review.setComputed(true);
                     reviewRepository.save(review);
                 }
@@ -59,20 +59,16 @@ public class RestaurantReviewStatsServiceImpl implements RestaurantReviewStatsSe
         }
     }
 
-    private void calculateState(RestaurantReviewStats reviewStats, short previousStarCount, Review review, boolean reviewDeleted) {
+    private void calculateState(RestaurantReviewStats reviewStats, short previousStarCount, Review review, int countDiff) {
         short starChangeCount = (short) (review.getStarCount() - previousStarCount);
 
         reviewStats.setRatingSum(reviewStats.getRatingSum() + starChangeCount);
-        if (!reviewDeleted) {
-            reviewStats.setRatingCount(reviewStats.getRatingCount() + 1);
-        } else {
-            reviewStats.setRatingCount(reviewStats.getRatingCount() - 1);
-        }
+        reviewStats.setRatingCount(reviewStats.getRatingCount() + countDiff);
 
         reviewStats.setRatingAverage(BigDecimal.valueOf(reviewStats.getRatingSum())
                 .divide(BigDecimal.valueOf(reviewStats.getRatingCount()), 2, RoundingMode.FLOOR));
 
-        if (!reviewDeleted) {
+        if (countDiff > 0) {
             if (reviewStats.getLowestRatedReview() == null || reviewStats.getLowestRatedReview().getStarCount() > review.getStarCount()) {
                 reviewStats.setLowestRatedReview(review);
             }
@@ -82,19 +78,15 @@ public class RestaurantReviewStatsServiceImpl implements RestaurantReviewStatsSe
             }
         } else {
             // if we are removing lowest rated review
-            if (reviewStats.getLowestRatedReview() != null &&  Objects.equals(reviewStats.getLowestRatedReview().getId(), review.getId())) {
-                Review lowestRatedRecord = reviewRepository.findFirstByRestaurantIdOrderByStarCountAsc(reviewStats.getRestaurant().getId())
-                        .orElse(null);
+            reviewStats.setLowestRatedReview(
+                    reviewRepository.findFirstByRestaurantIdOrderByStarCountAsc(reviewStats.getRestaurant().getId())
+                            .orElse(null)
+            );
 
-                reviewStats.setLowestRatedReview(lowestRatedRecord);
-            }
-
-            if (reviewStats.getHighestRatedReview() != null && Objects.equals(reviewStats.getHighestRatedReview().getId(), review.getId())) {
-                Review lowestRatedRecord = reviewRepository.findFirstByRestaurantIdOrderByStarCountDesc(reviewStats.getRestaurant().getId())
-                        .orElse(null);
-
-                reviewStats.setHighestRatedReview(lowestRatedRecord);
-            }
+            reviewStats.setHighestRatedReview(
+                    reviewRepository.findFirstByRestaurantIdOrderByStarCountDesc(reviewStats.getRestaurant().getId())
+                            .orElse(null)
+            );
         }
     }
 }

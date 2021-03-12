@@ -8,6 +8,7 @@ import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.service.UserService;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,7 +46,7 @@ public class UserController {
 
                                             @Schema(description = "page size")
                                             @RequestParam(required = false, defaultValue = "25") int pageSize) {
-        return service.list(PageRequest.of(page, pageSize));
+        return service.list(PageRequest.of(page, pageSize, Sort.by(Sort.Order.asc("id"))));
     }
 
     @GetMapping(PATH_ID)

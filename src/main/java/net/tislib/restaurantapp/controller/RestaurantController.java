@@ -8,6 +8,7 @@ import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.RestaurantResource;
 import net.tislib.restaurantapp.service.RestaurantService;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,7 +54,7 @@ public class RestaurantController {
 
                                                   @Schema(description = "page size")
                                                   @RequestParam(required = false, defaultValue = "25") int pageSize) {
-        return service.list(rating, ownerId, PageRequest.of(page, pageSize));
+        return service.list(rating, ownerId, PageRequest.of(page, pageSize, Sort.by(Sort.Order.desc("reviewStats.ratingAverage"))));
     }
 
     @GetMapping(PATH_ID)

@@ -18,5 +18,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     List<Review> findByComputed(boolean computed);
 
-    Page<Review> findAllByRestaurantIdOrderByReviewTimeDesc(Long restaurantId, Pageable pageable);
+    Page<Review> findAllByRestaurantId(Long restaurantId, Pageable pageable);
 }

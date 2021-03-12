@@ -60,14 +60,14 @@ public class ReviewServiceImpl implements ReviewService {
 
         repository.save(entity);
 
-        reviewStatsService.computeReview((short) 0, entity, false);
+        reviewStatsService.computeReview((short) 0, entity, 1);
 
         return get(restaurantId, entity.getId());
     }
 
     @Override
     public PageContainer<ReviewResource> list(Long restaurantId, BigDecimal rating, Pageable pageable) {
-        return mapper.mapPage(repository.findAllByRestaurantIdOrderByReviewTimeDesc(restaurantId, pageable))
+        return mapper.mapPage(repository.findAllByRestaurantId(restaurantId, pageable))
                 .map(item -> prepareRestaurantLinks(restaurantId, item));
     }
 
@@ -89,7 +89,8 @@ public class ReviewServiceImpl implements ReviewService {
 
         short previousStarCount = existingEntity.getStarCount();
 
-        resource.setId(null);
+        // do not allow updating id
+        resource.setId(id);
         resource.setReviewTime(Instant.now());
 
         mapper.mapFrom(existingEntity, resource);
@@ -99,7 +100,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         repository.save(existingEntity);
 
-        reviewStatsService.computeReview(previousStarCount, existingEntity, false);
+        reviewStatsService.computeReview(previousStarCount, existingEntity, 0);
 
         return get(restaurantId, resource.getId());
     }
@@ -148,7 +149,7 @@ public class ReviewServiceImpl implements ReviewService {
         short previousStarCount = existingEntity.getStarCount();
         existingEntity.setStarCount((short) 0);
 
-        reviewStatsService.computeReview(previousStarCount, existingEntity, true);
+        reviewStatsService.computeReview(previousStarCount, existingEntity, -1);
     }
 
     private ReviewResource prepareRestaurantLinks(long restaurantId, ReviewResource item) {

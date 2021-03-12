@@ -66,7 +66,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public PageContainer<RestaurantResource> list(BigDecimal rating, Long ownerId, Pageable pageable) {
-        Page<Restaurant> page = repository.findAllByOrderByReviewStatsRatingAverage(pageable);
+        Page<Restaurant> page = repository.findAll(pageable);
 
         return mapper.mapPage(page)
                 .map(this::prepareRestaurantLinks);

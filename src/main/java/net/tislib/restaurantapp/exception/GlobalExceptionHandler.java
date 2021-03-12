@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,16 +29,16 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException exception) {
         ErrorResponse response = new ErrorResponse(exception.getMessage());
 
-        log.info(exception.getMessage(), exception);
+        log.debug(exception.getMessage(), exception);
 
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException exception) {
+    @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class})
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(Exception exception) {
         ErrorResponse response = new ErrorResponse(exception.getMessage());
 
-        log.info(exception.getMessage(), exception);
+        log.debug(exception.getMessage(), exception);
 
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
