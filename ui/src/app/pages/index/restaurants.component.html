@@ -12,7 +12,7 @@
         <!--end::Page Heading-->
       </div>
       <div class="d-flex align-items-center">
-        <a (click)="add()" class="btn btn-light-primary font-weight-bolder btn-sm">New Restaurant</a>
+        <a *appIfHasRole="'OWNER,ADMIN'" (click)="add()" class="btn btn-light-primary font-weight-bolder btn-sm">New Restaurant</a>
       </div>
       <!--end::Toolbar-->
     </div>
@@ -39,9 +39,9 @@
                 <div *ngFor="let item of restaurantPagedData.content" class="d-flex align-items-center flex-wrap mb-8">
                   <!--begin::Symbol-->
                   <div class="symbol symbol-50 symbol-light mr-5">
-														<span class="symbol-label">
-															<img src="assets/media/svg/misc/006-plurk.svg" class="h-50 align-self-center" alt=""/>
-														</span>
+                      <span class="symbol-label">
+                        <img src="assets/media/svg/misc/006-plurk.svg" class="h-50 align-self-center" alt=""/>
+                      </span>
                   </div>
                   <!--end::Symbol-->
                   <!--begin::Text-->
@@ -56,8 +56,8 @@
                   <span
                     class="label label-xl label-light label-inline my-lg-0 my-2 text-dark-50 font-weight-bolder">{{item.rating}}</span>
                   <div>
-                    <button (click)="edit(item.id)">edit</button>
-                    <button (click)="delete(item.id)">delete</button>
+                    <button *appIfHasRole="'ADMIN'" (click)="edit(item.id)">edit</button>
+                    <button *appIfHasRole="'ADMIN'" (click)="delete(item.id)">delete</button>
                   </div>
                 </div>
                 <!--end::Item-->

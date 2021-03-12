@@ -1,11 +1,12 @@
-<!--begin::Card-->
-<div class="card card-custom card-stretch">
-  <div class="card-header">
-    <div class="card-title">
-      <h3 class="card-label">Write review</h3>
-    </div>
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">Update Restaurant: {{review.id}}</h5>
+    <button type="button" class="close" (click)="activeModal.close()" aria-label="Close">
+      <i aria-hidden="true" class="ki ki-close"></i>
+    </button>
   </div>
-  <div class="card-body">
+  <div class="modal-body">
+
     <div class="row">
       <div class="col-lg-2">
         <div class="form-group">
@@ -47,9 +48,10 @@
       </div>
     </div>
     <br/>
-    <div>
-      <button class="btn btn-bg-success" (click)="create()">Submit</button>
-    </div>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light-primary font-weight-bold" (click)="activeModal.close()">Close</button>
+    <button type="button" class="btn btn-primary font-weight-bold" (click)="save()">Save</button>
   </div>
 </div>
-<!--end::Card-->

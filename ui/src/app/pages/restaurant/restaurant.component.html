@@ -72,12 +72,14 @@
                 <div class="card-title">
                   <h3 class="card-label">{{item.id}} // {{item.dateOfVisit}} <small> - {{item.starCount}}</small></h3>
                   <h3 class="card-label">By - {{item.user.email}}</h3>
+                  <h3 *ngIf="item.ownerReply" class="card-label">Reply - {{item.ownerReply.comment}}</h3>
                 </div>
               </div>
               <div class="card-body">
                 <div>
-                  <button (click)="edit(restaurant.id, item.id)">edit</button>
-                  <button (click)="delete(restaurant.id, item.id)">delete</button>
+                  <button *appIfHasRole="'ADMIN'" (click)="edit(restaurant.id, item.id)">edit</button>
+                  <button *appIfHasRole="'ADMIN'" (click)="delete(restaurant.id, item.id)">delete</button>
+                  <button *appIfHasRole="isUserOwner ? 'OWNER,ADMIN' : 'ADMIN'" (click)="reply(restaurant.id, item.id)">reply</button>
                 </div>
                 <pre>
                   {{item.comment}}

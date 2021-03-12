@@ -1,5 +1,6 @@
 import {Resource} from './base/resource';
 import {User} from './user.resource';
+import {OwnerReply} from './owner-reply.resource';
 
 export interface Review extends Resource {
   id: number;
@@ -8,7 +9,5 @@ export interface Review extends Resource {
   comment: string;
   reviewTime: string | Date;
   dateOfVisit: string | Date;
-  ownerReply: {
-    comment: string
-  };
+  ownerReply: OwnerReply;
 }

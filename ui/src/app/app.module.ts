@@ -23,6 +23,9 @@ import {UserFormComponent} from './components/user-form/user-form.component';
 import {UsersComponent} from './pages/users/users.component';
 import {UserService} from './service/user-service';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {ReviewModalFormComponent} from './components/review-modal-form/review-modal-form.component';
+import { ReviewReplyFormComponent } from './components/review-reply-form/review-reply-form.component';
+import { IfHasRoleDirective } from './directives/if-has-role.directive';
 
 @NgModule({
   declarations: [
@@ -38,7 +41,10 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
     ReviewFormComponent,
     RestaurantFormComponent,
     UserFormComponent,
-    UsersComponent
+    UsersComponent,
+    ReviewModalFormComponent,
+    ReviewReplyFormComponent,
+    IfHasRoleDirective
   ],
   imports: [
     BrowserModule,

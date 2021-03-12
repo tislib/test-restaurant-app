@@ -12,7 +12,7 @@
         <!--end::Page Heading-->
       </div>
       <div class="d-flex align-items-center">
-        <a (click)="add()" class="btn btn-light-primary font-weight-bolder btn-sm">New User</a>
+        <a *appIfHasRole="'ADMIN'" (click)="add()" class="btn btn-light-primary font-weight-bolder btn-sm">New User</a>
       </div>
       <!--end::Toolbar-->
     </div>
@@ -31,7 +31,7 @@
             <th>Email</th>
             <th>Role</th>
             <th>Full Name</th>
-            <th>Actions</th>
+            <th *appIfHasRole="'ADMIN'">Actions</th>
           </tr>
           </thead>
           <tbody>
@@ -40,7 +40,7 @@
             <td>{{item.email}}</td>
             <td>{{item.role}}</td>
             <td>{{item.fullName}}</td>
-            <td>
+            <td *appIfHasRole="'ADMIN'">
               <button (click)="edit(item.id)">edit</button>
               <button (click)="delete(item.id)">delete</button>
             </td>

@@ -20,7 +20,7 @@
           </li>
           <!--end::Item-->
           <!--begin::Item-->
-          <li class="nav-item mr-3">
+          <li *appIfHasRole="'OWNER,ADMIN'" class="nav-item mr-3">
             <a href="#" [routerLink]="['/users']" routerLinkActive="active" class="nav-link py-4 px-6" data-toggle="tab"
                data-target="#kt_header_tab_2" role="tab">Users</a>
           </li>

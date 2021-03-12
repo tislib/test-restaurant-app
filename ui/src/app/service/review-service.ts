@@ -4,12 +4,14 @@ import {Observable} from 'rxjs';
 import {PageContainer} from '../resource/base/page-container';
 import {API_REVIEW} from '../const/paths';
 import {Review} from '../resource/review.resource';
+import {OwnerReply} from '../resource/owner-reply.resource';
 
 @Injectable()
 export class ReviewService {
 
   private readonly baseUrl = (restaurantId: number) => API_REVIEW.replace('{restaurantId}', String(restaurantId));
   private readonly byIdUrl = (restaurantId: number, id: number) => this.baseUrl(restaurantId) + '/' + id;
+  private readonly ownerReplyUrl = (restaurantId: number, id: number) => this.byIdUrl(restaurantId, id) + '/owner-reply';
 
   public constructor(private httpClient: HttpClient) {
   }
@@ -32,5 +34,9 @@ export class ReviewService {
 
   public delete(restaurantId: number, reviewId: number): Observable<void> {
     return this.httpClient.delete<void>(this.byIdUrl(restaurantId, reviewId));
+  }
+
+  reply(restaurantId: number, reviewId: number, ownerReply: OwnerReply): Observable<OwnerReply> {
+    return this.httpClient.put<OwnerReply>(this.ownerReplyUrl(restaurantId, reviewId), ownerReply);
   }
 }

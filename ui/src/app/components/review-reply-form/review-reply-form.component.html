@@ -1,0 +1,28 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">Update Restaurant: {{reviewId}}</h5>
+    <button type="button" class="close" (click)="activeModal.close()" aria-label="Close">
+      <i aria-hidden="true" class="ki ki-close"></i>
+    </button>
+  </div>
+  <div class="modal-body">
+
+    <div>
+      <label>Owner reply: <span class="text-danger">*</span></label>
+      <textarea class="form-control"
+                [class.is-invalid]="errors.get('comment')"
+                [(ngModel)]="ownerReply.comment"
+                rows="10"
+                placeholder="Your comment about restaurant"></textarea>
+      <div *ngIf="errors.get('comment')" class="invalid-feedback">
+        {{errors.get('comment')}}
+      </div>
+    </div>
+    <br/>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light-primary font-weight-bold" (click)="activeModal.close()">Close</button>
+    <button type="button" class="btn btn-primary font-weight-bold" (click)="save()">Save</button>
+  </div>
+</div>
