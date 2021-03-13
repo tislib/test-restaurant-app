@@ -7,7 +7,6 @@ import net.tislib.restaurantapp.controller.UserController;
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.RestaurantResource;
 import net.tislib.restaurantapp.data.mapper.RestaurantMapper;
-import net.tislib.restaurantapp.data.mapper.UserMapper;
 import net.tislib.restaurantapp.exception.InvalidFieldException;
 import net.tislib.restaurantapp.model.Restaurant;
 import net.tislib.restaurantapp.model.RestaurantReviewStats;
@@ -36,11 +35,11 @@ public class RestaurantServiceImpl implements RestaurantService {
     public static final String USER_NOT_EXISTS_MESSAGE = "user not exists";
     private final RestaurantRepository repository;
     private final RestaurantMapper mapper;
-    private final UserMapper userMapper;
     private final RestaurantReviewStatsRepository reviewStatsRepository;
     private final AuthenticationService authenticationService;
     private final UserRepository userRepository;
 
+    @Override
     public RestaurantResource create(final RestaurantResource resource) {
         Restaurant entity = mapper.from(resource);
         RestaurantReviewStats reviewStats = new RestaurantReviewStats();
@@ -88,19 +87,21 @@ public class RestaurantServiceImpl implements RestaurantService {
         resource.setId(id);
 
         // if user is not admin, rollback owner changes
+        Long userId = resource.getOwner().getId();
         if (authenticationService.getCurrentUser().getRole() != UserRole.ADMIN) {
-            resource.setOwner(existingResource.getOwner());
-        } else {
-            // check owner user exists
-            if (resource.getOwner().getId() == null) {
-                throw new InvalidFieldException(RestaurantResource.Fields.owner, "user not set");
-            }
+            userId = existingResource.getOwner().getId();
+        }
 
-            User user = userRepository.findById(resource.getOwner().getId()).orElseThrow(() -> new InvalidFieldException("owner", USER_NOT_EXISTS_MESSAGE));
-            resource.setOwner(userMapper.to(user));
+        if (userId == null) {
+            throw new InvalidFieldException(RestaurantResource.Fields.owner, "user not set");
         }
 
         mapper.mapFrom(existingEntity, resource);
+
+        User user = userRepository.findById(resource.getOwner().getId())
+                .orElseThrow(() -> new InvalidFieldException("owner", USER_NOT_EXISTS_MESSAGE));
+
+        existingEntity.setOwner(user);
 
         repository.save(existingEntity);
 

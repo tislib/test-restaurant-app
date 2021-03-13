@@ -14,6 +14,8 @@ import java.util.Set;
 @NoArgsConstructor
 public class TokenAuthentication implements Authentication {
 
+    private final long serialVersionUID = 8193910238L;
+
     private Set<UserAuthority> authorities;
 
     private Object credentials;

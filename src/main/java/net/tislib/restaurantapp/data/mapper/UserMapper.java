@@ -10,9 +10,11 @@ import org.mapstruct.MappingTarget;
 public interface UserMapper extends ResourceEntityMapper<UserResource, User> {
 
     @Mapping(target = UserResource.Fields.password, ignore = true)
+    @Override
     UserResource to(User entity);
 
     @Mapping(target = UserResource.Fields.password, ignore = true)
+    @Override
     void mapTo(@MappingTarget UserResource resource, User entity);
 
 }

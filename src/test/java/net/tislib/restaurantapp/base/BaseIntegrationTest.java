@@ -39,7 +39,8 @@ public class BaseIntegrationTest {
     protected UserResource currentUser;
 
     public class MockMvcExtended {
-        public ResultActions perform(RequestBuilder requestBuilder) throws Exception {
+        @SneakyThrows
+        public ResultActions perform(RequestBuilder requestBuilder) {
             return mockMvcMain.perform(servletContext -> {
                 MockHttpServletRequest res = requestBuilder.buildRequest(servletContext);
                 res.addHeader("Authorization", "Bearer " + accessToken);
@@ -67,7 +68,8 @@ public class BaseIntegrationTest {
         this.currentUser = result.getUser();
     }
 
-    private void tokenAuth(TestUser testUser) throws Exception {
+    @SneakyThrows
+    private void tokenAuth(TestUser testUser) {
         TokenCreateRequest tokenCreateRequest = new TokenCreateRequest();
         tokenCreateRequest.setEmail(testUser.getEmail());
         tokenCreateRequest.setPassword(testUser.getPassword());

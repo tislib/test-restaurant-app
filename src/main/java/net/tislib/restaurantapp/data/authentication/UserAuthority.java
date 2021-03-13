@@ -12,6 +12,8 @@ import org.springframework.security.core.GrantedAuthority;
 @NoArgsConstructor
 public class UserAuthority implements GrantedAuthority {
 
+    private final long serialVersionUID = 2348357432L;
+
     private String authority;
 
 }
