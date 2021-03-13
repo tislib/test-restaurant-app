@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import net.tislib.restaurantapp.config.JwtConfig;
 import net.tislib.restaurantapp.controller.AuthenticationController;
 import net.tislib.restaurantapp.controller.UserController;
 import net.tislib.restaurantapp.data.UserResource;
@@ -61,26 +62,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final String USER_ROLE = "userRole";
     private static final String INVALID_TOKEN_TYPE_MESSAGE = "invalid token type is accepted: {}";
 
-    @Value("${jwt.signKey}")
-    private String jwtTokenSignKey;
-
-    @Value("${jwt.accessTokenDurationSeconds}")
-    private int jwtAccessTokenDurationSeconds;
-
-    @Value("${jwt.refreshTokenDurationSeconds}")
-    private int jwtRefreshTokenDurationSeconds;
-
     private JwtParser tokenParser;
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final JwtConfig jwtConfig;
 
     @PostConstruct
     public void init() {
         log.debug("initialize token parser");
         tokenParser = Jwts.parserBuilder()
-                .setSigningKey(jwtTokenSignKey.getBytes(StandardCharsets.UTF_8))
+                .setSigningKey(jwtConfig.getTokenSignKey().getBytes(StandardCharsets.UTF_8))
                 .build();
     }
 
@@ -127,7 +120,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private TokenDetails prepareRefreshToken(User user) {
-        Instant expiry = Instant.now().plus(Duration.ofSeconds(jwtRefreshTokenDurationSeconds));
+        Instant expiry = Instant.now().plus(Duration.ofSeconds(jwtConfig.getRefreshTokenDurationSeconds()));
 
         return TokenDetails.builder()
                 .expiry(expiry)
@@ -137,7 +130,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .claim(USER, user)
                         .claim(EMAIL, user.getEmail())
                         .claim(TOKEN_TYPE, TOKEN_TYPE_REFRESH)
-                        .signWith(Keys.hmacShaKeyFor(jwtTokenSignKey.getBytes(StandardCharsets.UTF_8)))
+                        .signWith(Keys.hmacShaKeyFor(jwtConfig.getTokenSignKey().getBytes(StandardCharsets.UTF_8)))
                         .compact())
                 .build();
     }
@@ -145,7 +138,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private TokenDetails prepareAccessToken(User user) {
         log.debug("preparing access token for user: {}", user.getEmail());
 
-        Instant expiry = Instant.now().plus(Duration.ofSeconds(jwtAccessTokenDurationSeconds));
+        Instant expiry = Instant.now().plus(Duration.ofSeconds(jwtConfig.getAccessTokenDurationSeconds()));
 
         return TokenDetails.builder()
                 .expiry(expiry)
@@ -156,7 +149,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .claim(USER_ROLE, user.getRole())
                         .claim(EMAIL, user.getEmail())
                         .claim(TOKEN_TYPE, TOKEN_TYPE_ACCESS)
-                        .signWith(Keys.hmacShaKeyFor(jwtTokenSignKey.getBytes(StandardCharsets.UTF_8)))
+                        .signWith(Keys.hmacShaKeyFor(jwtConfig.getTokenSignKey().getBytes(StandardCharsets.UTF_8)))
                         .compact())
                 .build();
     }
