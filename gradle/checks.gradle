@@ -25,10 +25,8 @@ jacocoTestCoverageVerification {
                 minimum = 0.7
             }
             excludes = [
-                    'az.goldenpay.pg.merchant',
-                    'az.goldenpay.pg.merchant.plugin.mapper',
-                    'az.goldenpay.pg.merchant.model.mapper',
-                    'az.goldenpay.pg.merchant.component'
+                    'net.tislib.restaurantapp',
+                    'net.tislib.restaurantapp.const'
             ]
         }
     }

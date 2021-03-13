@@ -13,8 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.servlet.http.HttpServletResponse;
-
 import static net.tislib.restaurantapp.constant.ApiConstants.API_AUTHENTICATION;
 import static net.tislib.restaurantapp.constant.ApiConstants.API_SWAGGER_API_DOCS;
 import static net.tislib.restaurantapp.constant.ApiConstants.API_SWAGGER_UI;
@@ -29,6 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthenticationService authenticationService;
 
     @Override
+    @SuppressWarnings("PMD")
     protected void configure(HttpSecurity http) throws Exception {
         // Enable CORS and disable CSRF
         http = http.cors().disable().csrf().disable();
@@ -37,19 +36,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http = http
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and();
-
-        // Set unauthorized requests exception handler
-        http = http
-                .exceptionHandling()
-                .authenticationEntryPoint(
-                        (request, response, ex) -> {
-                            response.sendError(
-                                    HttpServletResponse.SC_UNAUTHORIZED,
-                                    ex.getMessage()
-                            );
-                        }
-                )
                 .and();
 
         // Set permissions on endpoints

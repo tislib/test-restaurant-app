@@ -23,6 +23,7 @@ import static net.tislib.restaurantapp.constant.SecurityConstants.AUTHORIZATION_
 @RequiredArgsConstructor
 public class AuthorizationFilter extends OncePerRequestFilter {
 
+    public static final int TWO = 2;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final AuthenticationService authenticationService;
 
@@ -30,8 +31,6 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws IOException, ServletException {
-        String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER_STRING);
-
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Headers", "*");
         response.setHeader("Access-Control-Allow-Methods", "*");
@@ -41,6 +40,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
+        String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER_STRING);
         if (StringUtils.isBlank(authorizationHeader)) {
             chain.doFilter(request, response);
             return;
@@ -48,7 +48,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
         String[] authorizationHeaderParts = authorizationHeader.split(" ");
 
-        if (authorizationHeaderParts.length != 2) {
+        if (authorizationHeaderParts.length != TWO) {
             sendError(response, "invalid token parts");
             return;
         }

@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
         validateUser(resource, existingEntity);
 
         resource.setId(id);
-        String previousPassword = existingEntity.getPassword();
+
         mapper.mapFrom(existingEntity, resource);
 
         // change password if password changed
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
             existingEntity.setPassword(passwordEncoder.encode(resource.getPassword()));
         } else {
             // reset password back if no change needed
-            existingEntity.setPassword(previousPassword);
+            existingEntity.setPassword(existingEntity.getPassword());
         }
 
         repository.save(existingEntity);

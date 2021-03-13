@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum TestUser {
     REGULAR_USER_1("user@testapp.com", Constants.ADMIN_123),
-    REGULAR_OWNER_1("owner@testapp.com", Constants.ADMIN_123),
-    REGULAR_OWNER_2("owner2@testapp.com", Constants.ADMIN_123),
+    OWNER_USER_1("owner@testapp.com", Constants.ADMIN_123),
+    OWNER_USER_2("owner2@testapp.com", Constants.ADMIN_123),
     ADMIN_USER("admin@testapp.com", Constants.ADMIN_123);
 
     private final String email;

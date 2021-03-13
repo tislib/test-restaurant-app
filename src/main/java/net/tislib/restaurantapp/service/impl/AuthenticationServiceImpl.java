@@ -53,8 +53,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public static final String INVALID_AUTHENTICATION_MESSAGE = "request is not properly authenticated";
     public static final String BAD_CREDENTIALS_MESSAGE = "username or password is incorrect";
 
-    private static final String ACCESS = "access";
-    private static final String REFRESH = "refresh";
+    private static final String TOKEN_TYPE_ACCESS = "access";
+    private static final String TOKEN_TYPE_REFRESH = "refresh";
     private static final String TOKEN_TYPE = "tokenType";
     private static final String EMAIL = "email";
     private static final String USER = "user";
@@ -136,7 +136,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .setExpiration(Date.from(expiry))
                         .claim(USER, user)
                         .claim(EMAIL, user.getEmail())
-                        .claim(TOKEN_TYPE, REFRESH)
+                        .claim(TOKEN_TYPE, TOKEN_TYPE_REFRESH)
                         .signWith(Keys.hmacShaKeyFor(jwtTokenSignKey.getBytes(StandardCharsets.UTF_8)))
                         .compact())
                 .build();
@@ -155,7 +155,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .claim(USER, user)
                         .claim(USER_ROLE, user.getRole())
                         .claim(EMAIL, user.getEmail())
-                        .claim(TOKEN_TYPE, ACCESS)
+                        .claim(TOKEN_TYPE, TOKEN_TYPE_ACCESS)
                         .signWith(Keys.hmacShaKeyFor(jwtTokenSignKey.getBytes(StandardCharsets.UTF_8)))
                         .compact())
                 .build();
@@ -192,7 +192,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         String tokenType = body.get(TOKEN_TYPE, String.class);
 
-        if (!REFRESH.equals(tokenType)) {
+        if (!TOKEN_TYPE_REFRESH.equals(tokenType)) {
             log.warn(INVALID_TOKEN_TYPE_MESSAGE, tokenType);
             throw new InsufficientAuthenticationException("different token is supplied");
         }
@@ -212,7 +212,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
             String tokenType = body.get(TOKEN_TYPE, String.class);
 
-            if (!ACCESS.equals(tokenType)) {
+            if (!TOKEN_TYPE_ACCESS.equals(tokenType)) {
                 log.warn(INVALID_TOKEN_TYPE_MESSAGE, tokenType);
                 return null;
             }
@@ -227,10 +227,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .build();
         } catch (SignatureException e) {
             log.warn(e.getMessage(), e);
-            //CHECKSTYLE:OFF
-        } catch (Throwable e) {
-            //CHECKSTYLE:ON
-            log.debug(e.getMessage(), e);
         }
 
         return null;

@@ -8,6 +8,9 @@ import lombok.EqualsAndHashCode;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class InvalidFieldException extends RuntimeException {
+
+    private final long serialVersionUID = 8439587092791L;
+
     private final String fieldName;
     private final String message;
 }
