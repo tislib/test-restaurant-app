@@ -21,11 +21,11 @@ node {
          }
 
          stage ('UI / npm install') {
-            sh 'npm install'
+            sh 'cd ui; npm install'
          }
 
          stage ('UI / build') {
-            sh 'npm run build:prod'
+            sh 'cd ui; npm run build:prod'
          }
 
         if (env.BRANCH_NAME == 'master'){
