@@ -263,7 +263,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public TokenUserDetails getTokenInfo() {
-        log.trace("request for token ifo");
+        log.trace("request for token info");
 
         TokenAuthentication tokenAuthentication = getCurrentAuthentication()
                 .orElseThrow(() -> new InsufficientAuthenticationException(INVALID_AUTHENTICATION_MESSAGE));

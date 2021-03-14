@@ -104,6 +104,8 @@ public class RestaurantServiceImpl implements RestaurantService {
         Restaurant entity = getEntity(id);
         RestaurantResource existingResource = mapper.to(entity);
 
+        log.debug("existing restaurant found: {}", entity);
+
         // revert id updates
         resource.setId(id);
 
