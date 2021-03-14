@@ -1,6 +1,7 @@
 package net.tislib.restaurantapp.model;
 
 import lombok.Data;
+import lombok.experimental.FieldNameConstants;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,6 +17,7 @@ import javax.persistence.UniqueConstraint;
 @Table(name = "`user`", uniqueConstraints = {
         @UniqueConstraint(name = "user_email_unique", columnNames = "email")
 })
+@FieldNameConstants
 public class User {
 
     @Id

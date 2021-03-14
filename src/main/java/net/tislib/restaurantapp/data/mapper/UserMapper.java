@@ -13,8 +13,16 @@ public interface UserMapper extends ResourceEntityMapper<UserResource, User> {
     @Override
     UserResource to(User entity);
 
+    @Mapping(target = User.Fields.password, ignore = true)
+    @Override
+    User from(UserResource resource);
+
     @Mapping(target = UserResource.Fields.password, ignore = true)
     @Override
     void mapTo(@MappingTarget UserResource resource, User entity);
+
+    @Mapping(target = User.Fields.password, ignore = true)
+    @Override
+    void mapFrom(@MappingTarget User resource, UserResource entity);
 
 }

@@ -85,9 +85,6 @@ public class UserServiceImpl implements UserService {
         // change password if password changed
         if (!StringUtils.isEmpty(resource.getPassword())) {
             existingEntity.setPassword(passwordEncoder.encode(resource.getPassword()));
-        } else {
-            // reset password back if no change needed
-            existingEntity.setPassword(existingEntity.getPassword());
         }
 
         repository.save(existingEntity);
