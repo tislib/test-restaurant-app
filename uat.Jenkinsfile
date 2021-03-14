@@ -2,9 +2,6 @@ pipeline {
     agent any
 
     stages {
-        stage('SCM') {
-            checkout scm
-        }
         stage('Build Image') {
             steps {
                 sh "docker build . -f uat.Dockerfile -t restaurant-app"
