@@ -70,7 +70,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @PostConstruct
     public void init() {
-        log.debug("initialize token parser");
+        log.info("initialize token parser");
 
         // initialize tokenParser ( tokenParser is used for both access tokens and refresh tokens )
         tokenParser = Jwts.parserBuilder()
@@ -119,7 +119,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new BadCredentialsException(BAD_CREDENTIALS_MESSAGE);
         }
 
-        log.debug("user authenticated: ");
+        log.info("user authenticated: {}", user);
 
         return user;
     }
@@ -182,6 +182,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         UserResource resource = userMapper.to(user);
 
+        log.info("user registered with details: {}", user);
+
         // prepare resource links
         return resource.add(linkTo(methodOn(UserController.class)
                 .get(user.getId())).withSelfRel());
@@ -212,6 +214,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         long userId = body.get(USER_ID, Number.class).longValue();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UsernameNotFoundException("user not found with id: " + userId));
+
+        log.debug("token refreshed for user: {}", user);
 
         return prepareAccessToken(user);
     }

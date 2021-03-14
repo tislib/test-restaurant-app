@@ -27,8 +27,7 @@ public class User {
 
     private String email;
 
-    // password field is excluded from toString to prevent unintended exposure in logs, etc.
-    @ToString.Exclude
+    @ToString.Exclude // ignore from toString as it is sensitive information
     private String password;
 
     private String fullName;

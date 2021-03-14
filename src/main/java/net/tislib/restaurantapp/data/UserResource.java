@@ -3,6 +3,7 @@ package net.tislib.restaurantapp.data;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 import net.tislib.restaurantapp.model.UserRole;
 import org.hibernate.validator.constraints.Length;
@@ -38,5 +39,6 @@ public class UserResource extends Resource<UserResource> {
 
     @Schema(accessMode = WRITE_ONLY, example = "pass123")
     @Length(min = 6, max = 255)
+    @ToString.Exclude // ignore from toString as it is sensitive information
     private String password;
 }

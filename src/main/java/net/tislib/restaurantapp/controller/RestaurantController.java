@@ -9,6 +9,7 @@ import net.tislib.restaurantapp.data.RestaurantResource;
 import net.tislib.restaurantapp.service.RestaurantService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -37,6 +39,7 @@ public class RestaurantController {
     @PostMapping
     @Operation(operationId = "restaurantCreate", summary = "create restaurant", description = "create a new restaurant")
     @PreAuthorize("hasAnyAuthority('OWNER', 'ADMIN')")
+    @ResponseStatus(HttpStatus.CREATED)
     public RestaurantResource create(@RequestBody @Validated RestaurantResource resource) {
         return service.create(resource);
     }
@@ -73,7 +76,8 @@ public class RestaurantController {
 
     @DeleteMapping(PATH_ID)
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @Operation(operationId = "restaurantDelete", summary = "delete restaurant", description = "delete singler restaurant by id")
+    @Operation(operationId = "restaurantDelete", summary = "delete restaurant", description = "delete single restaurant by id")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
