@@ -1,7 +1,9 @@
 package net.tislib.restaurantapp.service.impl;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -56,8 +58,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final String TOKEN_TYPE_ACCESS = "access";
     private static final String TOKEN_TYPE_REFRESH = "refresh";
     private static final String TOKEN_TYPE = "tokenType";
-    private static final String EMAIL = "email";
-    private static final String USER = "user";
+    private static final String USER_ID = "userId";
+    private static final String USER_EMAIL = "userEmail";
     private static final String USER_ROLE = "userRole";
     private static final String INVALID_TOKEN_TYPE_MESSAGE = "invalid token type is accepted: {}";
 
@@ -126,8 +128,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .content(Jwts.builder()
                         .setIssuedAt(new Date())
                         .setExpiration(Date.from(expiry))
-                        .claim(USER, user)
-                        .claim(EMAIL, user.getEmail())
+                        .claim(USER_ID, user.getEmail())
                         .claim(TOKEN_TYPE, TOKEN_TYPE_REFRESH)
                         .signWith(Keys.hmacShaKeyFor(jwtConfig.getTokenSignKey().getBytes(StandardCharsets.UTF_8)))
                         .compact())
@@ -144,9 +145,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .content(Jwts.builder()
                         .setIssuedAt(new Date())
                         .setExpiration(Date.from(expiry))
-                        .claim(USER, user)
                         .claim(USER_ROLE, user.getRole())
-                        .claim(EMAIL, user.getEmail())
+                        .claim(USER_EMAIL, user.getEmail())
+                        .claim(USER_ID, user.getId())
                         .claim(TOKEN_TYPE, TOKEN_TYPE_ACCESS)
                         .signWith(Keys.hmacShaKeyFor(jwtConfig.getTokenSignKey().getBytes(StandardCharsets.UTF_8)))
                         .compact())
@@ -189,39 +190,52 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new InsufficientAuthenticationException("different token is supplied");
         }
 
-        String email = body.get(EMAIL, String.class);
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(email));
+        long userId = body.get(USER_ID, Number.class).longValue();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("user not found with id: " + userId));
 
         return prepareAccessToken(user);
     }
 
+    // preparing authentication object for spring security
     @Override
-    public TokenAuthentication getTokenAuthentication(String token) {
+    public Optional<TokenAuthentication> getTokenAuthentication(String token) {
         try {
             Jwt<?, Claims> jwtData = tokenParser.parseClaimsJws(token);
             Claims body = jwtData.getBody();
 
             String tokenType = body.get(TOKEN_TYPE, String.class);
 
+            /* only accept access tokens, refresh token should be ignored
+               we have same signing key for access and refresh tokens, so an attacker may use refresh token to get some data
+               by checking token type we prevent token misuse
+             */
+
             if (!TOKEN_TYPE_ACCESS.equals(tokenType)) {
                 log.warn(INVALID_TOKEN_TYPE_MESSAGE, tokenType);
-                return null;
+                return Optional.empty();
             }
 
-            return TokenAuthentication.builder()
-                    .name(body.get(EMAIL, String.class))
+            /*
+             we build Authentication object (TokenAuthentication) from jwt details, no database touch needed
+             user role is used as token authority which will be used by checking user privileges by spring security
+             */
+            return Optional.of(TokenAuthentication.builder()
+                    .name(body.get(USER_EMAIL, String.class))
                     .authorities(Collections.singleton(UserAuthority.builder()
                             .authority(body.get(USER_ROLE, String.class))
                             .build()))
                     .principal(jwtData)
-                    .details(body.get(USER))
-                    .build();
-        } catch (SignatureException e) {
+                    .details(body.get(USER_EMAIL))
+                    .userId(body.get(USER_ID, Number.class).longValue())
+                    .build());
+        } catch (JwtException e) { // if something is wrong with jwt parsing and authenticating
+            // we will return null which means that authentication is finished with no success
             log.warn(e.getMessage(), e);
         }
 
-        return null;
+        // just return empty to claim that authentication is finished
+        return Optional.empty();
     }
 
     @Override
@@ -232,7 +246,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Jwt<?, ?> jwtData = (Jwt<?, ?>) tokenAuthentication.getPrincipal();
         Claims claims = (Claims) jwtData.getBody();
 
-        User user = userRepository.findByEmail(claims.get(EMAIL, String.class)).orElseThrow();
+        User user = userRepository.findById(claims.get(USER_ID, Number.class).longValue()).orElseThrow();
 
         return TokenUserDetails.builder()
                 .user(userMapper.to(user)
@@ -251,7 +265,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Jwt<?, ?> jwtData = (Jwt<?, ?>) tokenAuthentication.getPrincipal();
         Claims claims = (Claims) jwtData.getBody();
 
-        return userRepository.findByEmail(claims.get(EMAIL, String.class)).orElseThrow();
+        return userRepository.findById(claims.get(USER_ID, Number.class).longValue()).orElseThrow();
     }
 
     public Optional<TokenAuthentication> getCurrentAuthentication() {

@@ -27,7 +27,4 @@ public class ApiConstants {
 
     public static final String PATH_OWNER_REPLY = PATH_ID + "/owner-reply";
 
-    // parameters
-
-
 }

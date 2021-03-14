@@ -26,6 +26,8 @@ public class TokenAuthentication implements Authentication {
 
     private String name;
 
+    private long userId;
+
     @Override
     public boolean isAuthenticated() {
         return true;
