@@ -1,6 +1,7 @@
 package net.tislib.restaurantapp.model;
 
 import lombok.Data;
+import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 
 import javax.persistence.Entity;
@@ -26,6 +27,8 @@ public class User {
 
     private String email;
 
+    // password field is excluded from toString to prevent unintended exposure in logs, etc.
+    @ToString.Exclude
     private String password;
 
     private String fullName;

@@ -1,13 +1,11 @@
 package net.tislib.restaurantapp.service.impl;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import net.tislib.restaurantapp.config.JwtConfig;
@@ -73,6 +71,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @PostConstruct
     public void init() {
         log.debug("initialize token parser");
+
+        // initialize tokenParser ( tokenParser is used for both access tokens and refresh tokens )
         tokenParser = Jwts.parserBuilder()
                 .setSigningKey(jwtConfig.getTokenSignKey().getBytes(StandardCharsets.UTF_8))
                 .build();
@@ -107,6 +107,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private User authenticateUser(TokenCreateRequest tokenCreateRequest) {
+        log.trace("user authentication / email: {}", tokenCreateRequest.getEmail());
+
         User user = userRepository.findByEmail(tokenCreateRequest.getEmail())
                 .orElseThrow(() -> new BadCredentialsException(BAD_CREDENTIALS_MESSAGE));
 
@@ -117,19 +119,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new BadCredentialsException(BAD_CREDENTIALS_MESSAGE);
         }
 
+        log.debug("user authenticated: ");
+
         return user;
     }
 
     private TokenDetails prepareRefreshToken(User user) {
+        log.debug("preparing refresh token for user: {}", user.getEmail());
         Instant expiry = Instant.now().plus(Duration.ofSeconds(jwtConfig.getRefreshTokenDurationSeconds()));
 
+        // build refresh token
         return TokenDetails.builder()
                 .expiry(expiry)
                 .content(Jwts.builder()
                         .setIssuedAt(new Date())
                         .setExpiration(Date.from(expiry))
                         .claim(USER_ID, user.getEmail())
-                        .claim(TOKEN_TYPE, TOKEN_TYPE_REFRESH)
+                        .claim(TOKEN_TYPE, TOKEN_TYPE_REFRESH) // token type is used to differentiate access token and refresh token
                         .signWith(Keys.hmacShaKeyFor(jwtConfig.getTokenSignKey().getBytes(StandardCharsets.UTF_8)))
                         .compact())
                 .build();
@@ -156,17 +162,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public UserResource register(UserRegistrationRequest request) {
+        log.trace("user registration request: email: {}; fullName: {}", request.getEmail(), request.getFullName());
+
+        /*
+            validate user request data, most of validations is done by annotation based validation rules
+            validation method is used for handling complex validation which
+         */
         validateRegistrationRequest(request);
 
+        // prepare user data
         User user = new User();
         user.setEmail(request.getEmail());
         user.setFullName(request.getFullName());
+
+        // encode user password with bcrypt encoding
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         user = userRepository.save(user);
 
         UserResource resource = userMapper.to(user);
 
+        // prepare resource links
         return resource.add(linkTo(methodOn(UserController.class)
                 .get(user.getId())).withSelfRel());
     }
@@ -180,7 +196,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public TokenDetails refresh(String refreshToken) {
+        log.trace("refresh token request");
+
         Jwt<?, Claims> jwtData = tokenParser.parseClaimsJws(refreshToken);
+        log.debug("refresh token is parsed");
         Claims body = jwtData.getBody();
 
         String tokenType = body.get(TOKEN_TYPE, String.class);
@@ -240,13 +259,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public TokenUserDetails getTokenInfo() {
+        log.trace("request for token ifo");
+
         TokenAuthentication tokenAuthentication = getCurrentAuthentication()
                 .orElseThrow(() -> new InsufficientAuthenticationException(INVALID_AUTHENTICATION_MESSAGE));
+
+        log.debug("authentication claimed: {}", tokenAuthentication.getName());
 
         Jwt<?, ?> jwtData = (Jwt<?, ?>) tokenAuthentication.getPrincipal();
         Claims claims = (Claims) jwtData.getBody();
 
         User user = userRepository.findById(claims.get(USER_ID, Number.class).longValue()).orElseThrow();
+
+        log.debug("user found with authentication data: " + user);
 
         return TokenUserDetails.builder()
                 .user(userMapper.to(user)
@@ -257,6 +282,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .add(linkTo(methodOn(AuthenticationController.class).getToken()).withSelfRel());
     }
 
+    // this method is used by services to get current authenticated user by authentication
     @Override
     public User getCurrentUser() {
         TokenAuthentication tokenAuthentication = getCurrentAuthentication()
@@ -265,10 +291,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Jwt<?, ?> jwtData = (Jwt<?, ?>) tokenAuthentication.getPrincipal();
         Claims claims = (Claims) jwtData.getBody();
 
+        // return user from userId which is stored in jwt token
         return userRepository.findById(claims.get(USER_ID, Number.class).longValue()).orElseThrow();
     }
 
     public Optional<TokenAuthentication> getCurrentAuthentication() {
+        // read current authentication from spring security context
         return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
                 .filter(item -> item instanceof TokenAuthentication)
                 .map(item -> (TokenAuthentication) item);
