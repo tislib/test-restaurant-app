@@ -36,7 +36,7 @@ check.dependsOn jacocoTestCoverageVerification
 
 checkstyle {
     toolVersion = '8.33'
-    configFile = 'checkstyle.xml' as File
+    configFile = 'gradle/checkstyle.xml' as File
 }
 
 tasks.withType(Checkstyle) {
@@ -50,5 +50,5 @@ pmd {
     consoleOutput = true
     toolVersion = "6.21.0"
     rulePriority = 5
-    ruleSets = ["pmd.xml"]
+    ruleSets = ["gradle/pmd.xml"]
 }

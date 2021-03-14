@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException exception) {
         ErrorResponse response = new ErrorResponse(exception.getMessage());
 
-        log.debug(exception.getMessage(), exception);
+        log.warn(exception.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAuthenticationException(Exception exception) {
         ErrorResponse response = new ErrorResponse(exception.getMessage());
 
-        log.debug(exception.getMessage(), exception);
+        log.debug(exception.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException exception) {
         ErrorResponse response = new ErrorResponse(exception.getMessage());
 
-        log.debug(exception.getMessage(), exception);
+        log.debug(exception.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }

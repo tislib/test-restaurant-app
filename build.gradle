@@ -18,6 +18,10 @@ repositories {
     mavenCentral()
 }
 
+bootJar {
+    archiveFileName = 'restaurant-review-app.jar'
+}
+
 dependencies {
     // spring boot and its dependencies
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'

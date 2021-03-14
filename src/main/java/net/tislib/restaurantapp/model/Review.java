@@ -1,6 +1,5 @@
 package net.tislib.restaurantapp.model;
 
-import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.Entity;
