@@ -48,7 +48,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResource create(Long restaurantId, ReviewResource resource) {
-        log.trace("create review request: {}", resource);
+        log.trace("create review restaurantId: {}, request: {}", restaurantId, resource);
 
         Restaurant restaurantEntity = getRestaurantEntity(restaurantId);
         log.debug("restaurant found: {}", restaurantEntity);
@@ -124,18 +124,18 @@ public class ReviewServiceImpl implements ReviewService {
     public OwnerReplyResource updateOwnerReply(Long restaurantId, Long id, OwnerReplyResource resource) {
         log.trace("update owner reply request for restaurantId: {}; id: {}; resource: {}", restaurantId, id, resource);
 
-        Review existingEntity = getReviewEntity(restaurantId, id);
+        Review entity = getReviewEntity(restaurantId, id);
 
         UserRole role = authenticationService.getCurrentUser().getRole();
 
         if (role == UserRole.OWNER && !Objects.equals(
-                existingEntity.getRestaurant().getOwner().getId(),
+                entity.getRestaurant().getOwner().getId(),
                 authenticationService.getCurrentUser().getId())) {
             throw new AuthorizationServiceException("owner user cannot reply to restaurant: " + restaurantId);
         }
 
         // locate owner reply
-        OwnerReply ownerReply = existingEntity.getOwnerReply();
+        OwnerReply ownerReply = entity.getOwnerReply();
         if (ownerReply == null) {
             ownerReply = new OwnerReply();
         }
@@ -143,12 +143,14 @@ public class ReviewServiceImpl implements ReviewService {
         ownerReplyMapper.mapFrom(ownerReply, resource);
 
         // back reference
-        ownerReply.setReview(existingEntity);
+        ownerReply.setReview(entity);
 
         ownerReplyRepository.save(ownerReply);
 
+        log.debug("review updated: {}", entity);
+
         return ownerReplyMapper.to(ownerReply).add(
-                linkTo(methodOn(ReviewController.class).get(restaurantId, existingEntity.getId()))
+                linkTo(methodOn(ReviewController.class).get(restaurantId, entity.getId()))
                         .withRel(REVIEW),
                 linkTo(methodOn(RestaurantController.class).get(restaurantId))
                         .withRel(RESTAURANT)
@@ -157,14 +159,19 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void delete(Long restaurantId, Long id) {
-        Review existingEntity = getReviewEntity(restaurantId, id);
+        log.trace("delete review request for restaurantId: {}; id: {}", restaurantId, id);
+        Review entity = getReviewEntity(restaurantId, id);
+        log.debug("review found: {}", entity);
 
-        repository.delete(existingEntity);
+        repository.delete(entity);
 
-        short previousStarCount = existingEntity.getStarCount();
-        existingEntity.setStarCount((short) 0);
+        log.debug("review deleted: {}", entity);
 
-        reviewStatsService.computeReview(previousStarCount, existingEntity, -1);
+        short previousStarCount = entity.getStarCount();
+        entity.setStarCount((short) 0);
+
+        reviewStatsService.computeReview(previousStarCount, entity, -1);
+        log.debug("review ({}) computed for restaurant: {}", entity.getId(), restaurantId);
     }
 
     private ReviewResource prepareRestaurantLinks(long restaurantId, ReviewResource item) {
@@ -185,6 +192,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     private Restaurant getRestaurantEntity(Long restaurantId) {
         log.trace("searching restaurant with id: {}", restaurantId);
+
         return restaurantRepository.findById(restaurantId)
                 .orElseThrow(() -> new EntityNotFoundException("restaurant not found with id: " + restaurantId));
     }
