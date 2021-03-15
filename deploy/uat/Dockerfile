@@ -38,7 +38,7 @@ COPY --from=appBuild /home/gradle/build/libs/*.jar /app.jar
 
 COPY --from=uiBuild /app/dist /usr/share/nginx/html
 RUN rm /etc/nginx/conf.d/default.conf
-COPY ../../ui/uat.nginx.conf /etc/nginx/conf.d
+COPY ui/uat.nginx.conf /etc/nginx/conf.d
 
 COPY deploy/uat/run.sh /
 
