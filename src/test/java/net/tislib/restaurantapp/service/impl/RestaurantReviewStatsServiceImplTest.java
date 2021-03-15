@@ -16,7 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,8 +25,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class RestaurantReviewStatsServiceImplTest {
 
+    private final static long ONE = 1L;
+
     @InjectMocks
-    RestaurantReviewStatsServiceImpl reviewStatsService;
+    private RestaurantReviewStatsServiceImpl reviewStatsService;
 
     @Mock
     private RestaurantReviewStatsRepository repository;
@@ -35,51 +38,91 @@ class RestaurantReviewStatsServiceImplTest {
 
 
     @Test
-    void test() {
+    void callInitAndExpectReviewsCalculatingAsExpected() throws Exception {
         //Arrange
+        Restaurant restaurant = prepareRestaurant();
+
+        Review review = prepareReview(restaurant);
 
         List<Review> reviews = new ArrayList<>();
-        Review review = new Review();
-        Restaurant restaurant = new Restaurant();
-        restaurant.setId(1L);
-        review.setRestaurant(restaurant);
-        review.setId(1L);
-        review.setStarCount((short) 5);
-
-
         reviews.add(review);
-        RestaurantReviewStats reviewStats = new RestaurantReviewStats();
 
-        reviewStats.setRatingSum(1234);
-        reviewStats.setRatingCount(123);
+        Review expectedReview = prepareExpectedReview(restaurant);
+
+        RestaurantReviewStats reviewStats = prepareRestaurantReviewStats();
+
         Optional<RestaurantReviewStats> optionalRestaurantReviewStats = Optional.of(reviewStats);
-
         //Act
         when(reviewRepository.findByComputed(false)).thenReturn(reviews);
-        when(repository.findByRestaurantId(1L)).thenReturn(optionalRestaurantReviewStats);
+        when(repository.findByRestaurantId(ONE)).thenReturn(optionalRestaurantReviewStats);
         doNothing().when(repository).exclusiveUpdateReviewStats(reviewStats);
-
 
         reviewStatsService.init();
 
-        //Assert
-        verify(reviewRepository).findByComputed(false);
-        verify(repository).exclusiveUpdateReviewStats(reviewStats);
-    }
-
-    @Test
-    void test2 ()throws Exception{
-        Review review=new Review();
-        Restaurant restaurant=new Restaurant();
-        review.setRestaurant(restaurant);
-        review.setId(1L);
-        review.setStarCount((short) 5);
-        reviewStatsService.computeReview((short) 10,review,0);
         ArgumentCaptor<Review> reviewArgumentCaptor = ArgumentCaptor.forClass(Review.class);
-
         verify(reviewRepository).save(reviewArgumentCaptor.capture());
 
+        //Assert
+        verify(reviewRepository).findByComputed(false);
+        verify(reviewRepository).save(review);
+        verify(repository).findByRestaurantId(ONE);
+        verify(repository).exclusiveUpdateReviewStats(reviewStats);
+
+        assertThat(expectedReview.getRestaurant(), equalTo(reviewArgumentCaptor.getValue().getRestaurant()));
+        assertThat(expectedReview.getId(), equalTo(reviewArgumentCaptor.getValue().getId()));
+        assertThat(expectedReview.getStarCount(), equalTo(reviewArgumentCaptor.getValue().getStarCount()));
+        assertThat(expectedReview.isComputed(), equalTo(reviewArgumentCaptor.getValue().isComputed()));
+
+
     }
+
+    private RestaurantReviewStats prepareRestaurantReviewStats() {
+        RestaurantReviewStats reviewStats = new RestaurantReviewStats();
+        reviewStats.setRatingSum(1234);
+        reviewStats.setRatingCount(123);
+
+        return reviewStats;
+    }
+
+    private Review prepareExpectedReview(Restaurant restaurant) {
+        Review expectedReview = new Review();
+        expectedReview.setRestaurant(restaurant);
+        expectedReview.setId(ONE);
+        expectedReview.setStarCount((short) 5);
+        expectedReview.setComputed(true);
+
+        return expectedReview;
+    }
+
+    private Review prepareReview(Restaurant restaurant) {
+        Review review = new Review();
+        review.setRestaurant(restaurant);
+        review.setId(ONE);
+        review.setStarCount((short) 5);
+
+        return review;
+    }
+
+    private Restaurant prepareRestaurant() {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setId(ONE);
+
+        return restaurant;
+    }
+//
+//    @Test
+//    void test2() throws Exception {
+//        Review review = new Review();
+//        Restaurant restaurant = new Restaurant();
+//        review.setRestaurant(restaurant);
+//        review.setId(1L);
+//        review.setStarCount((short) 5);
+//        // reviewStatsService.computeReview((short) 10, review, 0);
+//        ArgumentCaptor<Review> reviewArgumentCaptor = ArgumentCaptor.forClass(Review.class);
+//
+//        verify(reviewRepository).save(reviewArgumentCaptor.capture());
+//
+//    }
 
 
 }

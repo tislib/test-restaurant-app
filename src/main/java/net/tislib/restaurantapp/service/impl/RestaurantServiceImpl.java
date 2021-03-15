@@ -121,9 +121,9 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     private RestaurantResource prepareRestaurantLinks(RestaurantResource item) {
-        item.getOwner().add(
-                linkTo(methodOn(UserController.class).get(item.getOwner().getId()))
-                        .withSelfRel()
+        item.getOwner().add(linkTo(methodOn(UserController.class)
+                .get(item.getOwner().getId()))
+                .withSelfRel()
         );
 
         return item.add(

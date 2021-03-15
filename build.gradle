@@ -59,6 +59,12 @@ dependencies {
     implementation group: 'com.h2database', name: 'h2'
 
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+
+    // for testing
+
+    // https://mvnrepository.com/artifact/org.hamcrest/hamcrest-all
+    testImplementation group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
+
 }
 
 test {

@@ -25,7 +25,6 @@ jacocoTestCoverageVerification {
                 minimum = 0.7
             }
             excludes = [
-                    'net.tislib.restaurantapp',
                     'net.tislib.restaurantapp.const'
             ]
         }
