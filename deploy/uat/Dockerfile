@@ -22,7 +22,7 @@ FROM node as uiBuild
 WORKDIR /app
 COPY ui/package*.json /app/
 RUN npm install
-COPY ../../ui /app
+COPY ui /app
 ARG configuration=uat
 RUN npm run build:prod -- --outputPath=./dist/out --configuration $configuration
 
