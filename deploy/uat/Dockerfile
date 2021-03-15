@@ -22,7 +22,7 @@ FROM node as uiBuild
 WORKDIR /app
 COPY ui/package*.json /app/
 RUN npm install
-COPY ui /app
+COPY ../../ui /app
 ARG configuration=uat
 RUN npm run build:prod -- --outputPath=./dist/out --configuration $configuration
 
@@ -38,9 +38,8 @@ COPY --from=appBuild /home/gradle/build/libs/*.jar /app.jar
 
 COPY --from=uiBuild /app/dist /usr/share/nginx/html
 RUN rm /etc/nginx/conf.d/default.conf
-COPY ui/uat.nginx.conf /etc/nginx/conf.d
+COPY ../../ui/uat.nginx.conf /etc/nginx/conf.d
 
-COPY uat.run.sh /
+COPY deploy/uat/run.sh /
 
-ENTRYPOINT ["sh", "/uat.run.sh"]
-
+ENTRYPOINT ["sh", "/run.sh"]
