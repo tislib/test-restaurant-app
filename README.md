@@ -40,6 +40,13 @@ Restaurant Reviews App
 
 ## Run the Application
 
+### Credentials
+| Email           | password  | Role              |
+| -----           | --------  | ----              |
+| admin@app.com   | admin123  | admin             |
+| user1@app.com   | user123   | regular user      |
+| owner1@app.com  | owner123  | restaurant owner  |
+
 ### Live demo
 application is already deployed to http://tisserv.net:8978/
 
