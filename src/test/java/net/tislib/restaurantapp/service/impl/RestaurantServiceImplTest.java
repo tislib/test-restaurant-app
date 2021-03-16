@@ -1,5 +1,6 @@
 package net.tislib.restaurantapp.service.impl;
 
+import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.RestaurantResource;
 import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.data.mapper.RestaurantMapper;
@@ -17,8 +18,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -36,7 +44,6 @@ class RestaurantServiceImplTest {
     private static final String SAMPLE_RESTAURANT_NAME = "SampleRestaurantName";
     private static final Long SAMPLE_ID_ONE = 1L;
     private static final Long SAMPLE_ID_SIX = 6L;
-
 
     @InjectMocks
     private RestaurantServiceImpl restaurantService;
@@ -85,11 +92,41 @@ class RestaurantServiceImplTest {
         verify(reviewStatsRepository).save(restaurantReviewStatsArgumentCaptor.capture());
 
         //Should complete feature
-
     }
 
     @Test
     void list() {
+        //Arrange
+        List<Restaurant> data = new ArrayList<>();
+
+        Restaurant restaurant = prepareRestaurantForList();
+
+        data.add(restaurant);
+
+        Page<Restaurant> page = new PageImpl<>(data);
+
+        List<RestaurantResource> restaurantResources = new ArrayList<>();
+
+        UserResource userResource = new UserResource();
+        userResource.setId(SAMPLE_ID_ONE);
+
+        RestaurantResource restaurantResource = prepareRestaurantResourceForList(userResource);
+
+        restaurantResources.add(restaurantResource);
+
+        PageContainer<RestaurantResource> pageContainer = new PageContainer<>();
+        pageContainer.setContent(restaurantResources);
+
+        Pageable pageable = PageRequest.of(1, 1);
+
+        when(repository.findAll(pageable)).thenReturn(page);
+        when(mapper.mapPage(page)).thenReturn(pageContainer);
+        //Act
+        PageContainer<RestaurantResource> actualResult = restaurantService.list(BigDecimal.ONE, 11L, pageable);
+        //Assert
+        assertThat(actualResult.getContent().get(0).getId(), is(SAMPLE_ID_ONE));
+        assertThat(actualResult.getContent().get(0).getName(), is(SAMPLE_RESTAURANT_NAME));
+
     }
 
     @Test
@@ -104,13 +141,11 @@ class RestaurantServiceImplTest {
         restaurantResource.setOwner(owner);
         restaurantResource.setId(SAMPLE_ID_ONE);
         restaurantResource.setName(SAMPLE_RESTAURANT_NAME);
-
         //Act
         when(repository.findById(SAMPLE_ID_ONE)).thenReturn(optionalRestaurant);
         when(mapper.to(restaurant)).thenReturn(restaurantResource);
 
         RestaurantResource actualResult = restaurantService.get(SAMPLE_ID_ONE);
-
         //Assert
         verify(repository).findById(SAMPLE_ID_ONE);
 
@@ -149,6 +184,7 @@ class RestaurantServiceImplTest {
         restaurantService.update(SAMPLE_ID_ONE, restaurantResource);
 
         ArgumentCaptor<Restaurant> restaurantArgumentCaptor = ArgumentCaptor.forClass(Restaurant.class);
+        //Assert
         verify(repository).save(restaurantArgumentCaptor.capture());
 
         verify(repository, times(2)).findById(SAMPLE_ID_ONE);
@@ -175,6 +211,26 @@ class RestaurantServiceImplTest {
         //Assert
         verify(repository).findById(SAMPLE_ID_ONE);
         verify(repository).delete(restaurant);
+    }
+
+    private Restaurant prepareRestaurantForList() {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setId(SAMPLE_ID_ONE);
+        restaurant.setName(SAMPLE_RESTAURANT_NAME);
+        User user = new User();
+        user.setId(SAMPLE_ID_ONE);
+        restaurant.setOwner(user);
+
+        return restaurant;
+    }
+
+    private RestaurantResource prepareRestaurantResourceForList(UserResource userResource) {
+        RestaurantResource restaurantResource = new RestaurantResource();
+        restaurantResource.setId(SAMPLE_ID_ONE);
+        restaurantResource.setName(SAMPLE_RESTAURANT_NAME);
+        restaurantResource.setOwner(userResource);
+
+        return restaurantResource;
     }
 
     private User prepareCurrentUserForUpdate() {
