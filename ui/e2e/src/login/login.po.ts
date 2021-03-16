@@ -1,11 +1,11 @@
 import { browser, by, element } from 'protractor';
 
-export class AppPage {
+export class LoginPage {
   async navigateTo(): Promise<unknown> {
-    return browser.get(browser.baseUrl);
+    return browser.get(browser.baseUrl + 'login');
   }
 
   async getTitleText(): Promise<string> {
-    return element(by.css('app-root .content span')).getText();
+    return element(by.css('.e2e-login-text')).getText();
   }
 }
