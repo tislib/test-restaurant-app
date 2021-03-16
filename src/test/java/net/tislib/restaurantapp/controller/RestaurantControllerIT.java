@@ -25,15 +25,17 @@ public class RestaurantControllerIT extends BaseIntegrationTest {
     @Test
     @SuppressWarnings("PMD")
     public void createRestaurantAndGet200Success() throws Exception {
+        // arrange
         auth(TestUser.OWNER_USER_1);
 
         RestaurantResource resource = new RestaurantResource();
         resource.setName(RESTAURANT_1_NAME);
         resource.setOwner(currentUser);
 
+        // act & assert
         mockMvc.perform(post(API_RESTAURANTS).content(jsonContent(resource)))
                 .andExpect(ResultMatcher.matchAll(
-                        status().isOk()
+                        status().isCreated()
                 ))
                 .andExpect(jsonPath("$.name").value(RESTAURANT_1_NAME));
     }
@@ -60,7 +62,7 @@ public class RestaurantControllerIT extends BaseIntegrationTest {
 
         mockMvc.perform(delete(API_RESTAURANTS + PATH_ID, RESTAURANT_ID_2))
                 .andExpect(ResultMatcher.matchAll(
-                        status().isOk()
+                        status().isNoContent()
                 ));
 
         mockMvc.perform(get(API_RESTAURANTS + PATH_ID, RESTAURANT_ID_2))

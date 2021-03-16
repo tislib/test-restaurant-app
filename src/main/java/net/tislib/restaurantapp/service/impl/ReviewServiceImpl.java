@@ -38,6 +38,9 @@ public class ReviewServiceImpl implements ReviewService {
 
     public static final String RESTAURANT = "restaurant";
     public static final String REVIEW = "review";
+    public static final String LOG_RESTAURANT_FOUND = "restaurant found: {}";
+    public static final String LOG_REVIEW_COMPUTED_FOR_RESTAURANT = "review ({}) computed for restaurant: {}";
+    public static final String LOG_REVIEW_FOUND = "review found: {}";
     private final ReviewRepository repository;
     private final RestaurantRepository restaurantRepository;
     private final ReviewMapper mapper;
@@ -51,7 +54,7 @@ public class ReviewServiceImpl implements ReviewService {
         log.trace("create review restaurantId: {}, request: {}", restaurantId, resource);
 
         Restaurant restaurantEntity = getRestaurantEntity(restaurantId);
-        log.debug("restaurant found: {}", restaurantEntity);
+        log.debug(LOG_RESTAURANT_FOUND, restaurantEntity);
 
         Review entity = mapper.from(resource);
 
@@ -66,7 +69,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         // compute restaurant review stats (average review, etc.)
         reviewStatsService.computeReview((short) 0, entity, 1);
-        log.debug("review ({}) computed for restaurant: {}", entity.getId(), restaurantEntity.getId());
+        log.debug(LOG_REVIEW_COMPUTED_FOR_RESTAURANT, entity.getId(), restaurantEntity.getId());
 
         return get(restaurantId, entity.getId());
     }
@@ -85,7 +88,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         Review entity = getReviewEntity(restaurantId, id);
 
-        log.debug("review found: {}", entity);
+        log.debug(LOG_REVIEW_FOUND, entity);
 
         return prepareRestaurantLinks(restaurantId, mapper.to(entity));
     }
@@ -95,10 +98,10 @@ public class ReviewServiceImpl implements ReviewService {
         log.trace("update review request for restaurantId: {}; id: {}; resource: {}", restaurantId, id, resource);
 
         Restaurant restaurantEntity = getRestaurantEntity(restaurantId);
-        log.debug("restaurant found: {}", restaurantEntity);
+        log.debug(LOG_RESTAURANT_FOUND, restaurantEntity);
 
         Review entity = getReviewEntity(restaurantId, id);
-        log.debug("review found: {}", entity);
+        log.debug(LOG_REVIEW_FOUND, entity);
 
         // previous star count is used to find star change to aply restaurant review stats
         short previousStarCount = entity.getStarCount();
@@ -115,7 +118,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         // compute restaurant review stats (average review, etc.)
         reviewStatsService.computeReview(previousStarCount, entity, 0);
-        log.debug("review ({}) computed for restaurant: {}", entity.getId(), restaurantEntity.getId());
+        log.debug(LOG_REVIEW_COMPUTED_FOR_RESTAURANT, entity.getId(), restaurantEntity.getId());
 
         return get(restaurantId, resource.getId());
     }
@@ -161,7 +164,7 @@ public class ReviewServiceImpl implements ReviewService {
     public void delete(Long restaurantId, Long id) {
         log.trace("delete review request for restaurantId: {}; id: {}", restaurantId, id);
         Review entity = getReviewEntity(restaurantId, id);
-        log.debug("review found: {}", entity);
+        log.debug(LOG_REVIEW_FOUND, entity);
 
         repository.delete(entity);
 
@@ -171,7 +174,7 @@ public class ReviewServiceImpl implements ReviewService {
         entity.setStarCount((short) 0);
 
         reviewStatsService.computeReview(previousStarCount, entity, -1);
-        log.debug("review ({}) computed for restaurant: {}", entity.getId(), restaurantId);
+        log.debug(LOG_REVIEW_COMPUTED_FOR_RESTAURANT, entity.getId(), restaurantId);
     }
 
     private ReviewResource prepareRestaurantLinks(long restaurantId, ReviewResource item) {

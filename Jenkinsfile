@@ -13,11 +13,11 @@ node {
          }
 
          stage ('API / Unit & Integration Tests') {
-//             try {
-//                 sh './gradlew check --no-daemon --info'
-//             } finally {
-//                 junit '**/build/test-results/test/*.xml'
-//             }
+            try {
+                sh './gradlew check --no-daemon --info'
+            } finally {
+                junit '**/build/test-results/test/*.xml'
+            }
          }
 
          stage ('UI / npm install') {

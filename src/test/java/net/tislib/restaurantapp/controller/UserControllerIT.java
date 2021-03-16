@@ -32,7 +32,7 @@ public class UserControllerIT extends BaseIntegrationTest {
 
         mockMvc.perform(post(API_USERS).content(jsonContent(resource)))
                 .andExpect(ResultMatcher.matchAll(
-                        status().isOk()
+                        status().isCreated()
                 ))
                 .andExpect(jsonPath(UserResource.Fields.fullName).value(USER_1_FULL_NAME));
     }
@@ -57,7 +57,7 @@ public class UserControllerIT extends BaseIntegrationTest {
 
         mockMvc.perform(delete(API_USERS + PATH_ID, USER_ID_2))
                 .andExpect(ResultMatcher.matchAll(
-                        status().isOk()
+                        status().isNoContent()
                 ));
 
         mockMvc.perform(get(API_USERS + PATH_ID, USER_ID_2))

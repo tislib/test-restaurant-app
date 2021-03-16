@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import static net.tislib.restaurantapp.constant.ApiConstants.API_AUTHENTICATION;
 import static net.tislib.restaurantapp.constant.ApiConstants.PATH_TOKEN;
+import static net.tislib.restaurantapp.constant.SecurityConstants.BEARER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -38,14 +39,15 @@ public class BaseIntegrationTest {
     protected String accessToken;
 
     protected UserResource currentUser;
+    protected String refreshToken;
 
     public class MockMvcExtended {
         @SneakyThrows
         public ResultActions perform(RequestBuilder requestBuilder) {
             return mockMvcMain.perform(servletContext -> {
                 MockHttpServletRequest request = requestBuilder.buildRequest(servletContext);
-                request.addHeader(SecurityConstants.AUTHORIZATION_HEADER, SecurityConstants.BEARER + " " + accessToken);
-                request.setContentType(MediaType.APPLICATION_JSON.getType());
+                request.addHeader(SecurityConstants.AUTHORIZATION_HEADER, prepareAuthorizationHeaderValue(accessToken));
+                request.setContentType(MediaType.APPLICATION_JSON.toString());
                 return request;
             });
         }
@@ -85,11 +87,18 @@ public class BaseIntegrationTest {
         TokenPair result = mapper.readValue(content, TokenPair.class);
 
         this.accessToken = result.getAccessToken().getContent();
+        this.refreshToken = result.getRefreshToken().getContent();
     }
 
     @SneakyThrows
     public byte[] jsonContent(Object object) {
         return mapper.writeValueAsBytes(object);
+    }
+
+
+
+    public static String prepareAuthorizationHeaderValue(String token) {
+        return BEARER + " " + token;
     }
 
 }

@@ -35,7 +35,7 @@ public class ReviewControllerIT extends BaseIntegrationTest {
 
         mockMvc.perform(post(API_REVIEWS, RESTAURANT_ID).content(jsonContent(resource)))
                 .andExpect(ResultMatcher.matchAll(
-                        status().isOk()
+                        status().isCreated()
                 ))
                 .andExpect(jsonPath(ReviewResource.Fields.comment).value(resource.getComment()));
     }
@@ -47,7 +47,7 @@ public class ReviewControllerIT extends BaseIntegrationTest {
 
         mockMvc.perform(delete(API_REVIEWS + PATH_ID, RESTAURANT_ID, REVIEW_ID_2))
                 .andExpect(ResultMatcher.matchAll(
-                        status().isOk()
+                        status().isNoContent()
                 ));
 
         mockMvc.perform(get(API_REVIEWS + PATH_ID, RESTAURANT_ID, REVIEW_ID_2))

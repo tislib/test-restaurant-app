@@ -20,7 +20,7 @@ import net.tislib.restaurantapp.data.authentication.TokenUserDetails;
 import net.tislib.restaurantapp.data.authentication.UserAuthority;
 import net.tislib.restaurantapp.data.authentication.UserRegistrationRequest;
 import net.tislib.restaurantapp.data.mapper.UserMapper;
-import net.tislib.restaurantapp.exception.UserAlreadyExistsException;
+import net.tislib.restaurantapp.exception.InvalidFieldException;
 import net.tislib.restaurantapp.model.User;
 import net.tislib.restaurantapp.model.repository.UserRepository;
 import net.tislib.restaurantapp.service.AuthenticationService;
@@ -134,7 +134,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .content(Jwts.builder()
                         .setIssuedAt(new Date())
                         .setExpiration(Date.from(expiry))
-                        .claim(USER_ID, user.getEmail())
+                        .claim(USER_ID, user.getId())
                         .claim(TOKEN_TYPE, TOKEN_TYPE_REFRESH) // token type is used to differentiate access token and refresh token
                         .signWith(Keys.hmacShaKeyFor(jwtConfig.getTokenSignKey().getBytes(StandardCharsets.UTF_8)))
                         .compact())
@@ -192,7 +192,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private void validateRegistrationRequest(UserRegistrationRequest request) {
         // check for email uniqueness
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new UserAlreadyExistsException("user is already exists");
+            throw new InvalidFieldException("email", "this email is already used by another user");
         }
     }
 
@@ -208,7 +208,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         if (!TOKEN_TYPE_REFRESH.equals(tokenType)) {
             log.warn(INVALID_TOKEN_TYPE_MESSAGE, tokenType);
-            throw new InsufficientAuthenticationException("different token is supplied");
+            throw new InvalidFieldException("refreshToken", "different token is supplied");
         }
 
         long userId = body.get(USER_ID, Number.class).longValue();

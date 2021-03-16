@@ -80,21 +80,28 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         String token = authorizationHeaderParts[1];
 
         // authentication object is prepared from the token we prepared
-        Optional<TokenAuthentication> tokenAuthentication = authenticationService.getTokenAuthentication(token);
+        Optional<TokenAuthentication> tokenAuthenticationOptional = authenticationService.getTokenAuthentication(token);
+
+        if (tokenAuthenticationOptional.isEmpty()) {
+            sendError(request, response, "token is invalid");
+            return;
+        }
+
+        TokenAuthentication tokenAuthentication = tokenAuthenticationOptional.get();
 
         log.debug("user authenticated: {} request: {}",
-                tokenAuthentication.map(TokenAuthentication::getName).orElse(null),
+                tokenAuthentication.getName(),
                 logRequest(request));
 
         // pass authentication token to spring security
-        SecurityContextHolder.getContext().setAuthentication(tokenAuthentication.orElse(null));
+        SecurityContextHolder.getContext().setAuthentication(tokenAuthentication);
 
         try {
             /* MDC is used for logging purposes, userId MDC variable is passed to logback
                check logback.xml:2
             */
-            tokenAuthentication.ifPresent(authentication ->
-                    MDC.put(USER_ID, String.valueOf(authentication.getUserId())));
+
+            MDC.put(USER_ID, String.valueOf(tokenAuthentication.getUserId()));
 
             chain.doFilter(request, response);
         } finally {
