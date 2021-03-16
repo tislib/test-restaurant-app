@@ -24,7 +24,7 @@ resource "kubernetes_deployment" "restaurant-app-api" {
       spec {
         container {
           name  = var.api_base_name
-          image = local.service_image
+          image = local.api_service_image
 
           env {
             name  = "PROFILE"
@@ -67,6 +67,6 @@ resource "kubernetes_deployment" "restaurant-app-api" {
         }
       }
     }
-    replicas = 1
+    replicas = 2
   }
 }

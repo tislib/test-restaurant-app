@@ -6,8 +6,6 @@ Restaurant Reviews App
 * [Description](#description)
 * [Tech Stack](#tech-stack)
 * [Running Application](#run-the-application)
-* [Project Architecture](#project-instructions)
-* [Development Environment](#project-instructions)
 * [Deployment](#deployment)
     * [Kubernetes](#kubernetes)
     * [UAT](#uat)
@@ -79,17 +77,13 @@ npm install
 npm run start
 ```
 
-## Project Architecture
-
-
-
 ## Deployment
 
 ### Kubernetes
   
 For kubernetes deployment terraform + Jenkins is used.
 
-UI and API is deployed with seperate deployments
+UI and API is deployed with separate deployments
 
 you can check /infra folder for terraform files
 
