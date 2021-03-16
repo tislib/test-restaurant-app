@@ -81,11 +81,42 @@ npm run start
 
 ## Project Architecture
 
+
+
 ## Deployment
 
 ### Kubernetes
+  
+For kubernetes deployment terraform + Jenkins is used.
+
+UI and API is deployed with seperate deployments
+
+you can check /infra folder for terraform files
 
 ### UAT
 
+UAT deployment is single deployment, more suitable for uat/qa testing in feature branchs, you just need to checkout to feature branch and call following command 
+
+```sh deploy/uat/deploy.sh```
+
+you can also adjust deploy.sh file
+
+```
+deploy/uat/
+docker build ../.. -f Dockerfile -t restaurant-app
+docker kill restaurant-app
+docker rm restaurant-app
+docker run -d --name restaurant-app -p 8978:80 restaurant-app
+```
+
 ## Future plans
 
+* Current architecture is monolith, in future it can be changed to microservices architecture for better development and to improve scalability
+* When review is added/modified/deleted it is immediately calculated, instead we can use Kafka or similar mechanism for doing it in background
+  * While using Kafka fail tolerance should be handled better as if computation is not done properly, the message which is responsible for computing it will kept in kafka and recomputed
+  * We can have different scaling logic between review computers and review apis
+  * We can have different aggregation even analytic aggregation with the data in Kafka
+* We can use terraform to fully automatize application deployment to kubernetes even fully automize deploying to cloud
+* For optimistic lock we can use redlock in future for better resource locking and to move locking manager logic outside of database
+* We can use mongodb for better performance, in our application relational database is not very usefull as our application is not using joins, grouping, etc.
+* We can use refresh token blacklisting to invalidate refresh tokens in case of logout

@@ -16,6 +16,16 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+/*
+ * optimistic lock is used for updating restaurant review stats exclusively
+ * Reasons for using optimistic lock and exclusive operations:
+ * If we have scaled application and have parallel updates, it will cause data loss and miss calculations
+ * To prevent concurrency problems we need to add some locking mechanism
+ * (pessimistic lock, optimistic lock in database side or third party locking system for distributed lock (redis redlock, etc.))
+ * For specifically this case optimistic lock is more useful than pessimistic lock,
+ * if we use pessimistic lock instead we will have blocked a lot of blocked reviews and it will cause live locks
+ * review count is much more higher than restaurant count it means that pessimistic lock in our case is wrong way to use.
+*/
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -47,15 +57,15 @@ public class RestaurantReviewStatsServiceImpl implements RestaurantReviewStatsSe
     }
 
     @Override
+    /*
+     * previousStarCount is previous value of starCount field, this is used to indicate review change
+     * review is the review which will be computed
+     * countDiff how reviews count will be changed
+     *      if countDiff > 0 it means adding new record added
+     *      if countDiff == 0 it means record is updated
+     *      if countDiff < 0 it means record is deleted
+     */
     public void computeReview(short previousStarCount, Review review, int countDiff) {
-        /*
-         * previousStarCount is previous review count before operation, this is used to indicate review change
-         * review is the review which will be computed
-         * countDiff how reviews count will be changed
-         *      if countDiff > 0 it means adding new record added
-         *      if countDiff == 0 it means record is updated
-         *      if countDiff < 0 it means record is deleted
-         */
         RestaurantReviewStats reviewStats = repository.findByRestaurantId(review.getRestaurant().getId())
                 .orElseThrow();
 
@@ -64,16 +74,6 @@ public class RestaurantReviewStatsServiceImpl implements RestaurantReviewStatsSe
                 reviewStats.getRestaurant().getId(),
                 countDiff);
 
-        /*
-            optimistic lock is used for updating restaurant review stats exclusively
-            Reasons for using optimistic lock and exclusive operations:
-            If we have scaled application and have parallel updates, it will cause data loss and miss calculations
-            To prevent concurrency problems we need to add some locking mechanism
-            (pessimistic lock, optimistic lock in database side or third party locking system for distributed lock (redis redlock, etc.))
-            For specifically this case optimistic lock is more useful than pessimistic lock,
-            if we use pessimistic lock instead we will have blocked a lot of blocked reviews and it will cause live locks
-            review count is much more higher than restaurant count it means that pessimistic lock in our case is wrong way to use.
-         */
         for (int i = 0; i < OPTIMISTIC_LOCK_MAX_RETRY_THRESHOLD; i++) {
             try {
                 log.debug("calculating reviewStats for review: {}; try:{}", review, i);
@@ -128,7 +128,6 @@ public class RestaurantReviewStatsServiceImpl implements RestaurantReviewStatsSe
                 log.debug("highest rated review is set to {}", review.getId());
             }
         } else {
-            // if we are removing lowest rated review
             reviewStats.setLowestRatedReview(
                     reviewRepository.findFirstByRestaurantIdOrderByStarCountAsc(reviewStats.getRestaurant().getId())
                             .orElse(null)

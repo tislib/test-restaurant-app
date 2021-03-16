@@ -20,13 +20,17 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-import static net.tislib.restaurantapp.constant.SecurityConstants.AUTHORIZATION_HEADER_STRING;
+import static net.tislib.restaurantapp.constant.SecurityConstants.AUTHORIZATION_HEADER;
+import static net.tislib.restaurantapp.constant.SecurityConstants.BEARER;
 
 @Log4j2
 @RequiredArgsConstructor
 public class AuthorizationFilter extends OncePerRequestFilter {
 
-    public static final int AUTHORIZATION_HEADER_PART_COUNT = 2; // 1: token-type(Bearer); 2: token itself
+    private static final int AUTHORIZATION_HEADER_PART_COUNT = 2; // 1: token-type(Bearer); 2: token itself
+    private static final String SPACE = " ";
+    private static final String USER_ID = "userId";
+
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final AuthenticationService authenticationService;
 
@@ -47,7 +51,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         }
 
         // read authorization header
-        String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER_STRING);
+        String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
 
         /* check if authorization token is empty, if empty then we will not handle authentication logic
            spring security will handle what to do with unauthenticated requests
@@ -59,7 +63,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         }
 
         // split header to to parts, token type(bearer) and token itself
-        String[] authorizationHeaderParts = authorizationHeader.split(" ");
+        String[] authorizationHeaderParts = authorizationHeader.split(SPACE);
 
         // if header parts count is different, it means that header structure is wrong
         if (authorizationHeaderParts.length != AUTHORIZATION_HEADER_PART_COUNT) {
@@ -68,7 +72,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
         }
 
         // if token type is not bearer token (e.g. basic, etc.) it means that we need to fail request
-        if (!authorizationHeaderParts[0].equalsIgnoreCase("bearer")) {
+        if (!authorizationHeaderParts[0].equalsIgnoreCase(BEARER)) {
             sendError(request, response, "bearer token expected");
             return;
         }
@@ -90,12 +94,12 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                check logback.xml:2
             */
             tokenAuthentication.ifPresent(authentication ->
-                    MDC.put("userId", String.valueOf(authentication.getUserId())));
+                    MDC.put(USER_ID, String.valueOf(authentication.getUserId())));
 
             chain.doFilter(request, response);
         } finally {
             // clear MDC userId variable to prevent userId leakage cross threads
-            MDC.remove("userId");
+            MDC.remove(USER_ID);
         }
     }
 

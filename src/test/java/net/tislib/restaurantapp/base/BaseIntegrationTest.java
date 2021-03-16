@@ -2,6 +2,7 @@ package net.tislib.restaurantapp.base;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import net.tislib.restaurantapp.constant.SecurityConstants;
 import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.data.authentication.TokenCreateRequest;
 import net.tislib.restaurantapp.data.authentication.TokenPair;
@@ -9,6 +10,7 @@ import net.tislib.restaurantapp.data.authentication.TokenUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -25,7 +27,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 public class BaseIntegrationTest {
 
-    public static final String APPLICATION_JSON = "application/json";
     protected final MockMvcExtended mockMvc = new MockMvcExtended();
 
     @Autowired
@@ -42,10 +43,10 @@ public class BaseIntegrationTest {
         @SneakyThrows
         public ResultActions perform(RequestBuilder requestBuilder) {
             return mockMvcMain.perform(servletContext -> {
-                MockHttpServletRequest res = requestBuilder.buildRequest(servletContext);
-                res.addHeader("Authorization", "Bearer " + accessToken);
-                res.setContentType(APPLICATION_JSON);
-                return res;
+                MockHttpServletRequest request = requestBuilder.buildRequest(servletContext);
+                request.addHeader(SecurityConstants.AUTHORIZATION_HEADER, SecurityConstants.BEARER + " " + accessToken);
+                request.setContentType(MediaType.APPLICATION_JSON.getType());
+                return request;
             });
         }
     }
@@ -75,7 +76,7 @@ public class BaseIntegrationTest {
         tokenCreateRequest.setPassword(testUser.getPassword());
 
         String content = mockMvcMain.perform(post(API_AUTHENTICATION + PATH_TOKEN)
-                .contentType(APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonContent(tokenCreateRequest)))
                 .andReturn()
                 .getResponse()
