@@ -3,6 +3,7 @@ package net.tislib.restaurantapp.controller;
 import net.tislib.restaurantapp.base.BaseIntegrationTest;
 import net.tislib.restaurantapp.base.TestUser;
 import net.tislib.restaurantapp.constant.SecurityConstants;
+import net.tislib.restaurantapp.data.authentication.TokenCreateRequest;
 import net.tislib.restaurantapp.data.authentication.TokenPair;
 import net.tislib.restaurantapp.data.authentication.TokenRefreshRequest;
 import net.tislib.restaurantapp.data.authentication.UserRegistrationRequest;
@@ -17,6 +18,7 @@ import static net.tislib.restaurantapp.constant.ApiConstants.API_USERS;
 import static net.tislib.restaurantapp.constant.ApiConstants.PATH_REGISTER;
 import static net.tislib.restaurantapp.constant.ApiConstants.PATH_TOKEN;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,6 +28,7 @@ public class AuthenticationControllerIT extends BaseIntegrationTest {
     private static final String EXPIRED_TOKEN = "eyJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2MTU4ODE3NjcsImV4cCI6MTYxNTg4MTc5NywidXNlclJvbGUiOiJBRE1JTiIsInVzZXJFbWFpbCI6ImFkbWluQHRlc3RhcHAuY29tIiwidXNlcklkIjoxMDQsInRva2VuVHlwZSI6ImFjY2VzcyJ9.aiopar1PNRjmnk_bZpSpzIUVKnIVEaDmBL28DTN8nXjkseq4-EHjMjM0gkYTooyq0KvarbUDn_VXSXvWCgauHA";
     private static final String INVALID_TOKEN = "AN_INVALID_TOKEN";
     private static final String INVALID_TOKEN_STRUCTURE = "BASIC k93kd92k9e"; // basic instead of bearer
+    private static final String INVALID_TOKEN_STRUCTURE2 = "Bearer k93kd 92k9e"; // additional space
 
     @Test
     @SuppressWarnings("PMD")
@@ -77,6 +80,16 @@ public class AuthenticationControllerIT extends BaseIntegrationTest {
                         status().isBadRequest()
                 ));
 
+    }
+
+    @Test
+    @SuppressWarnings("PMD")
+    public void authenticationShouldBeIgnoredAndRequestTerminatedInCaseOfOptionsRequest() throws Exception {
+        mockMvcMain.perform(options(API_USERS)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(ResultMatcher.matchAll(
+                        status().isOk()
+                ));
     }
 
     @Test
@@ -141,6 +154,17 @@ public class AuthenticationControllerIT extends BaseIntegrationTest {
 
     @Test
     @SuppressWarnings("PMD")
+    public void useInvalidTokenStructureWithAdditionalSpaceAndFail() throws Exception {
+        mockMvcMain.perform(get(API_USERS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(SecurityConstants.AUTHORIZATION_HEADER, INVALID_TOKEN_STRUCTURE2))
+                .andExpect(ResultMatcher.matchAll(
+                        status().isUnauthorized()
+                ));
+    }
+
+    @Test
+    @SuppressWarnings("PMD")
     public void registerAndGetSuccess() throws Exception {
         UserRegistrationRequest userRegistrationRequest = new UserRegistrationRequest();
 
@@ -153,6 +177,38 @@ public class AuthenticationControllerIT extends BaseIntegrationTest {
                 .content(jsonContent(userRegistrationRequest)))
                 .andExpect(ResultMatcher.matchAll(
                         status().is2xxSuccessful()
+                ));
+    }
+
+    @Test
+    @SuppressWarnings("PMD")
+    public void authenticationWithWrongCredentialsAndGet401Unauthorized() throws Exception {
+        TokenCreateRequest tokenCreateRequest = new TokenCreateRequest();
+
+        tokenCreateRequest.setEmail("wrong-email@wrong-email.com");
+        tokenCreateRequest.setPassword("wrong password1");
+
+        mockMvcMain.perform(post(API_AUTHENTICATION + PATH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonContent(tokenCreateRequest)))
+                .andExpect(ResultMatcher.matchAll(
+                        status().isUnauthorized()
+                ));
+    }
+
+    @Test
+    @SuppressWarnings("PMD")
+    public void authenticationWithWrongPasswordAndGet401Unauthorized() throws Exception {
+        TokenCreateRequest tokenCreateRequest = new TokenCreateRequest();
+
+        tokenCreateRequest.setEmail("admin@app.com");
+        tokenCreateRequest.setPassword("wrong password2");
+
+        mockMvcMain.perform(post(API_AUTHENTICATION + PATH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonContent(tokenCreateRequest)))
+                .andExpect(ResultMatcher.matchAll(
+                        status().isUnauthorized()
                 ));
     }
 

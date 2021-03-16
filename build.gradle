@@ -8,7 +8,7 @@ plugins {
     id 'pmd'
 }
 
-apply from: 'gradle/checks.gradle';
+apply from: 'gradle/checks.gradle'
 
 group = 'net.tislib.restaurantapp'
 version = '1.0'
@@ -69,5 +69,5 @@ dependencies {
 
 test {
     useJUnitPlatform()
-//    finalizedBy jacocoTestReport
+    finalizedBy jacocoTestReport
 }

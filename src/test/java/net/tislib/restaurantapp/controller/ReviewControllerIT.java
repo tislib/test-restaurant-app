@@ -3,6 +3,7 @@ package net.tislib.restaurantapp.controller;
 import net.tislib.restaurantapp.base.BaseIntegrationTest;
 import net.tislib.restaurantapp.base.TestUser;
 import net.tislib.restaurantapp.data.OwnerReplyResource;
+import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.ReviewResource;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -25,6 +26,7 @@ public class ReviewControllerIT extends BaseIntegrationTest {
     public static final int REVIEW_ID_1 = 101;
     public static final int REVIEW_ID_2 = 102;
     public static final int REVIEW_ID_3 = 103;
+    public static final String TEST_REPLIED_COMMENT = "test-replied-comment";
 
     @Test
     @SuppressWarnings("PMD")
@@ -64,7 +66,7 @@ public class ReviewControllerIT extends BaseIntegrationTest {
         mockMvc.perform(get(API_REVIEWS + PATH_ID, RESTAURANT_ID, REVIEW_ID_1))
                 .andExpect(ResultMatcher.matchAll(
                         status().isOk(),
-                        jsonPath("$.comment").value("test-comment-123")
+                        jsonPath(OwnerReplyResource.Fields.comment).value("test-comment-123")
                 ));
     }
 
@@ -103,9 +105,9 @@ public class ReviewControllerIT extends BaseIntegrationTest {
         mockMvc.perform(get(API_REVIEWS, RESTAURANT_ID))
                 .andExpect(ResultMatcher.matchAll(
                         status().isOk(),
-                        jsonPath("content").isArray(),
-                        jsonPath("totalElements").isNumber(),
-                        jsonPath("totalPages").isNumber()
+                        jsonPath(PageContainer.Fields.content).isArray(),
+                        jsonPath(PageContainer.Fields.totalElements).isNumber(),
+                        jsonPath(PageContainer.Fields.totalPages).isNumber()
                 ));
     }
 
@@ -115,13 +117,44 @@ public class ReviewControllerIT extends BaseIntegrationTest {
         auth(TestUser.OWNER_USER_1);
 
         OwnerReplyResource ownerReplyResource = new OwnerReplyResource();
-        ownerReplyResource.setComment("test-replied-comment");
+        ownerReplyResource.setComment(TEST_REPLIED_COMMENT);
 
         mockMvc.perform(put(API_REVIEWS + PATH_OWNER_REPLY, RESTAURANT_ID, REVIEW_ID_1)
                 .content(jsonContent(ownerReplyResource)))
                 .andExpect(ResultMatcher.matchAll(
                         status().isOk(),
-                        jsonPath("comment").value(ownerReplyResource.getComment())
+                        jsonPath(OwnerReplyResource.Fields.comment).value(ownerReplyResource.getComment())
+                ));
+    }
+
+    @Test
+    @SuppressWarnings("PMD")
+    public void ownerReplyWithAdminToAnyNotOwnedRestaurantAndGet200Ok() throws Exception {
+        auth(TestUser.ADMIN_USER);
+
+        OwnerReplyResource ownerReplyResource = new OwnerReplyResource();
+        ownerReplyResource.setComment(TEST_REPLIED_COMMENT);
+
+        mockMvc.perform(put(API_REVIEWS + PATH_OWNER_REPLY, RESTAURANT_ID, REVIEW_ID_1)
+                .content(jsonContent(ownerReplyResource)))
+                .andExpect(ResultMatcher.matchAll(
+                        status().isOk(),
+                        jsonPath(OwnerReplyResource.Fields.comment).value(ownerReplyResource.getComment())
+                ));
+    }
+
+    @Test
+    @SuppressWarnings("PMD")
+    public void ownerReplyWithOwnerToAnyNotOwnedRestaurantAndGet400BadRequest() throws Exception {
+        auth(TestUser.OWNER_USER_2);
+
+        OwnerReplyResource ownerReplyResource = new OwnerReplyResource();
+        ownerReplyResource.setComment(TEST_REPLIED_COMMENT);
+
+        mockMvc.perform(put(API_REVIEWS + PATH_OWNER_REPLY, RESTAURANT_ID, REVIEW_ID_1)
+                .content(jsonContent(ownerReplyResource)))
+                .andExpect(ResultMatcher.matchAll(
+                        status().isForbidden()
                 ));
     }
 

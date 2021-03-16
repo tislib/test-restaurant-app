@@ -2,7 +2,6 @@ package net.tislib.restaurantapp.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import net.tislib.restaurantapp.data.authentication.ErrorResponse;
 import net.tislib.restaurantapp.data.authentication.TokenAuthentication;
@@ -116,8 +115,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     }
 
     // we are sending request to error if the token is invalid
-    @SneakyThrows
-    private void sendError(HttpServletRequest request, HttpServletResponse response, String message) {
+    private void sendError(HttpServletRequest request, HttpServletResponse response, String message) throws IOException {
         ErrorResponse errorResponse = new ErrorResponse(message);
         log.warn(message + logRequest(request));
 

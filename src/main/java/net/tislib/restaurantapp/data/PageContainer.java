@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.List;
 import java.util.function.Function;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "page container")
+@FieldNameConstants
 public class PageContainer<T> extends Resource<PageContainer<T>> {
 
     @Schema(description = "list of resources")

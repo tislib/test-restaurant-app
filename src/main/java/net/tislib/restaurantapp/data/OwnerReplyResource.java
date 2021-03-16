@@ -3,6 +3,7 @@ package net.tislib.restaurantapp.data;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.FieldNameConstants;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
@@ -12,6 +13,7 @@ import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@FieldNameConstants
 public class OwnerReplyResource extends Resource<OwnerReplyResource> {
 
     @NotBlank

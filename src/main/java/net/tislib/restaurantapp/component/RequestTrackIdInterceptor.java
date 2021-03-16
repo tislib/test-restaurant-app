@@ -3,7 +3,6 @@ package net.tislib.restaurantapp.component;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -30,11 +29,7 @@ public class RequestTrackIdInterceptor extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            String requestTrackId = request.getHeader(REQUEST_TRACK_ID);
-
-            if (StringUtils.isBlank(requestTrackId)) {
-                requestTrackId = initRequestTrackId();
-            }
+            String requestTrackId = initRequestTrackId();
 
             MDC.put(REQUEST_TRACK_ID, requestTrackId);
 

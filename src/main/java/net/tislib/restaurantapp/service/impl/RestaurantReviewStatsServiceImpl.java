@@ -66,16 +66,18 @@ public class RestaurantReviewStatsServiceImpl implements RestaurantReviewStatsSe
      *      if countDiff < 0 it means record is deleted
      */
     public void computeReview(short previousStarCount, Review review, int countDiff) {
-        RestaurantReviewStats reviewStats = repository.findByRestaurantId(review.getRestaurant().getId())
-                .orElseThrow();
-
-        log.debug("computing review for reviewId: {}; restaurantId: {}, countDiff: {}",
-                review.getId(),
-                reviewStats.getRestaurant().getId(),
-                countDiff);
-
         for (int i = 0; i < OPTIMISTIC_LOCK_MAX_RETRY_THRESHOLD; i++) {
             try {
+                // Load reviewStats entity each time, the reason is that:
+                // If optimistic lock fails it means that entity is already updated by another call, so we need to reload entity
+                RestaurantReviewStats reviewStats = repository.findByRestaurantId(review.getRestaurant().getId())
+                        .orElseThrow();
+
+                log.debug("computing review for reviewId: {}; restaurantId: {}, countDiff: {}",
+                        review.getId(),
+                        reviewStats.getRestaurant().getId(),
+                        countDiff);
+
                 log.debug("calculating reviewStats for review: {}; try:{}", review, i);
                 // calculate new review statistic by applying review
                 calculateStats(reviewStats, previousStarCount, review, countDiff);
