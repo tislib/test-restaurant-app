@@ -25,11 +25,6 @@ resource "kubernetes_deployment" "restaurant-app-ui" {
         container {
           name  = var.api_base_name
           image = local.service_image
-
-          env {
-            name  = "SPRING_PROFILES_ACTIVE"
-            value = "prod"
-          }
         }
 
         image_pull_secrets {
