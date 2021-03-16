@@ -61,12 +61,12 @@ class ReviewServiceImplTest {
 
     @Test
     void create() {
+        //Arrange
         RestaurantReviewStats reviewStats = new RestaurantReviewStats();
         reviewStats.setId(SAMPLE_ID_ONE);
 
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName("SampleRestaurantName");
-        restaurant.setId(SAMPLE_ID_ONE);
+        Restaurant restaurant = prepareRestaurant();
+        restaurant.setReviewStats(reviewStats);
 
         Review review = prepareReview();
         Optional<Review> optionalReview = Optional.of(review);
@@ -76,26 +76,37 @@ class ReviewServiceImplTest {
 
         Review expectedReview = prepareReview();
 
-        restaurant.setReviewStats(reviewStats);
-
         when(restaurantRepository.findById(SAMPLE_ID_ONE)).thenReturn(optionalRestaurant);
         when(mapper.from(reviewResource)).thenReturn(review);
-        when(repository.save(review)).thenReturn(review);
+        when(repository.save(review)).thenAnswer(invocation -> {
+            review.setId(SAMPLE_ID_ONE);
+            return review;
+        });
+        when(mapper.to(review)).thenReturn(reviewResource);
         doNothing().when(reviewStatsService).computeReview((short) 0, review, 1);
         when(repository.findByRestaurantIdAndId(SAMPLE_ID_ONE, SAMPLE_ID_ONE)).thenReturn(optionalReview);
-
+        //Act
         reviewService.create(SAMPLE_ID_ONE, reviewResource);
-
+        //Assert
         ArgumentCaptor<Review> reviewArgumentCaptor = ArgumentCaptor.forClass(Review.class);
         verify(repository).save(reviewArgumentCaptor.capture());
-
 
         verify(restaurantRepository).findById(SAMPLE_ID_ONE);
         verify(mapper).to(review);
         verify(reviewStatsService).computeReview((short) 0, review, 1);
 
         assertThat(expectedReview.getId(), is(reviewArgumentCaptor.getValue().getId()));
+        assertThat(expectedReview.getReviewTime(), is(reviewArgumentCaptor.getValue().getReviewTime()));
+        assertThat(expectedReview.getComment(), is(reviewArgumentCaptor.getValue().getComment()));
+        assertThat(expectedReview.getStarCount(), is(reviewArgumentCaptor.getValue().getStarCount()));
 
+    }
+
+    private Restaurant prepareRestaurant() {
+        Restaurant restaurant = new Restaurant();
+        restaurant.setName("SampleRestaurantName");
+        restaurant.setId(SAMPLE_ID_ONE);
+        return restaurant;
     }
 
     @Test
