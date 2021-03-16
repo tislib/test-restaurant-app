@@ -25,7 +25,7 @@ import java.util.List;
  * For specifically this case optimistic lock is more useful than pessimistic lock,
  * if we use pessimistic lock instead we will have blocked a lot of blocked reviews and it will cause live locks
  * review count is much more higher than restaurant count it means that pessimistic lock in our case is wrong way to use.
-*/
+ */
 @Service
 @RequiredArgsConstructor
 @Log4j2
@@ -110,8 +110,12 @@ public class RestaurantReviewStatsServiceImpl implements RestaurantReviewStatsSe
         reviewStats.setRatingSum(reviewStats.getRatingSum() + starChangeCount);
         reviewStats.setRatingCount(reviewStats.getRatingCount() + countDiff);
 
-        reviewStats.setRatingAverage(BigDecimal.valueOf(reviewStats.getRatingSum())
-                .divide(BigDecimal.valueOf(reviewStats.getRatingCount()), 2, RoundingMode.FLOOR));
+        if (reviewStats.getRatingCount() != 0) {
+            reviewStats.setRatingAverage(BigDecimal.valueOf(reviewStats.getRatingSum())
+                    .divide(BigDecimal.valueOf(reviewStats.getRatingCount()), 2, RoundingMode.FLOOR));
+        } else {
+            reviewStats.setRatingAverage(BigDecimal.ZERO);
+        }
 
         /*
         if countDiff > 0 (new review is added) check if new review is highest or lowest rated review and update stats
