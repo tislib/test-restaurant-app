@@ -46,7 +46,7 @@ Restaurant Reviews App
 | owner1@app.com  | owner123  | restaurant owner  |
 
 ### Live demo
-application is already deployed to http://tisserv.net:8978/
+application is already deployed to https://toptal.tisserv.net/
 
 ### Run for UAT (simple run)
 
@@ -83,7 +83,8 @@ npm run start
   
 For kubernetes deployment terraform + Jenkins is used.
 
-UI and API is deployed with separate deployments
+UI and API is deployed with sepa
+rate deployments
 
 you can check /infra folder for terraform files
 
