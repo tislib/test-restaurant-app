@@ -20,7 +20,11 @@
             <!--begin::Form group-->
             <div class="form-group">
               <label class="font-size-h6 font-weight-bolder text-dark">Email</label>
-              <input required="required" [(ngModel)]="email" class="form-control form-control-solid h-auto py-6 px-6 rounded-lg" type="email" name="username"
+              <input required="required"
+                     [(ngModel)]="email"
+                     class="form-control form-control-solid h-auto py-6 px-6 rounded-lg e2e-email-field"
+                     type="email"
+                     name="username"
                      autocomplete="off"/>
             </div>
             <!--end::Form group-->
@@ -29,14 +33,20 @@
               <div class="d-flex justify-content-between mt-n5">
                 <label class="font-size-h6 font-weight-bolder text-dark pt-5">Password</label>
               </div>
-              <input required="required" [(ngModel)]="password" class="form-control form-control-solid h-auto py-6 px-6 rounded-lg" type="password" name="password"
+              <input required="required"
+                     [(ngModel)]="password"
+                     class="form-control form-control-solid h-auto py-6 px-6 rounded-lg e2e-password-field"
+                     type="password"
+                     name="password"
                      autocomplete="off"/>
             </div>
             <!--end::Form group-->
             <!--begin::Action-->
             <div class="pb-lg-0 pb-5">
-              <button type="button" id="kt_login_signin_submit" (click)="login()"
-                      class="btn btn-primary font-weight-bolder font-size-h6 px-8 py-4 my-3 mr-3">Sign In
+              <button type="button"
+                      id="kt_login_signin_submit"
+                      (click)="login()"
+                      class="btn btn-primary font-weight-bolder font-size-h6 px-8 py-4 my-3 mr-3 e2e-signin-button">Sign In
               </button>
             </div>
             <!--end::Action-->

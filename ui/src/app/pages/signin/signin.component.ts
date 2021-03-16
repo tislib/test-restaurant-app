@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthenticationService} from '../../service/authentication-service';
 import {Router} from '@angular/router';
+import {NotifierService} from 'angular-notifier';
 
 @Component({
   selector: 'app-signin',
@@ -13,7 +14,8 @@ export class SigninComponent implements OnInit {
   public password = '';
 
   constructor(private authenticationService: AuthenticationService,
-              private router: Router) {
+              private router: Router,
+              private notifierService: NotifierService) {
   }
 
   ngOnInit(): void {
@@ -28,14 +30,14 @@ export class SigninComponent implements OnInit {
       this.authenticationService.setCurrentToken(resp);
       this.checkAuthentication();
     }, () => {
-      alert('username or password is invalid');
+      this.notifierService.notify('error', 'username or password is wrong');
     });
   }
 
   private checkAuthentication(): void {
     this.authenticationService.getToken()
       .subscribe(() => {
-        alert('authenticated');
+        this.notifierService.notify('success', 'you are authenticated successfully');
         this.router.navigate(['/']);
       });
   }

@@ -26,6 +26,7 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {ReviewModalFormComponent} from './components/review-modal-form/review-modal-form.component';
 import { ReviewReplyFormComponent } from './components/review-reply-form/review-reply-form.component';
 import { IfHasRoleDirective } from './directives/if-has-role.directive';
+import {NotifierModule} from 'angular-notifier';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { IfHasRoleDirective } from './directives/if-has-role.directive';
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    NgbModule
+    NgbModule,
+    NotifierModule
   ],
   providers: [
     {
