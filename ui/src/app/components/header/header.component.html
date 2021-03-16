@@ -1,0 +1,53 @@
+<!--begin::Header-->
+<div id="kt_header" class="header flex-column header-fixed">
+  <!--begin::Top-->
+  <div class="header-top">
+    <!--begin::Container-->
+    <div class="container">
+      <!--begin::Left-->
+      <div class="d-none d-lg-flex align-items-center mr-3">
+        <!--begin::Logo-->
+        <a href="#" [routerLink]="['/']" class="mr-20">
+          <img alt="Logo" src="assets/media/logos/logo-letter-9.png" class="max-h-35px"/>
+        </a>
+        <!--end::Logo-->
+        <!--begin::Tab Navs(for desktop mode)-->
+        <ul class="header-tabs nav align-self-end font-size-lg" role="tablist">
+          <!--begin::Item-->
+          <li class="nav-item">
+            <a href="#" [routerLink]="['/restaurants']" routerLinkActive="active" class="nav-link py-4 px-6" data-toggle="tab"
+               data-target="#kt_header_tab_1" role="tab">Restaurants</a>
+          </li>
+          <!--end::Item-->
+          <!--begin::Item-->
+          <li *appIfHasRole="'OWNER,ADMIN'" class="nav-item mr-3">
+            <a href="#" [routerLink]="['/users']" routerLinkActive="active" class="nav-link py-4 px-6" data-toggle="tab"
+               data-target="#kt_header_tab_2" role="tab">Users</a>
+          </li>
+          <!--end::Item-->
+        </ul>
+        <!--begin::Tab Navs-->
+      </div>
+      <!--end::Left-->
+      <!--begin::Topbar-->
+      <div *ngIf="tokenDetails" class="topbar bg-primary">
+        <!--begin::User-->
+        <div class="topbar-item">
+          <div class="btn btn-icon btn-hover-transparent-white w-sm-auto d-flex align-items-center btn-lg px-2"
+               id="kt_quick_user_toggle">
+            <div class="d-flex flex-column text-right pr-sm-3">
+              <button class="e2e-logout-button" (click)="logout()">logout</button>
+              <span
+                class="text-white opacity-50 font-weight-bold font-size-sm d-none d-sm-inline">{{tokenDetails.user.email}}</span>
+            </div>
+          </div>
+        </div>
+        <!--end::User-->
+      </div>
+      <!--end::Topbar-->
+    </div>
+    <!--end::Container-->
+  </div>
+  <!--end::Top-->
+</div>
+<!--end::Header-->

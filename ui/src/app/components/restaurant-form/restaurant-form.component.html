@@ -1,0 +1,38 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 *ngIf="create" class="modal-title">New Restaurant</h5>
+    <h5 *ngIf="!create" class="modal-title">Update Restaurant: {{restaurant.name}} - {{restaurant.id}}</h5>
+    <button type="button" class="close" (click)="activeModal.close()" aria-label="Close">
+      <i aria-hidden="true" class="ki ki-close"></i>
+    </button>
+  </div>
+  <div class="modal-body">
+
+    <!--begin::Card-->
+    <div class="col-lg-4">
+      <div class="form-group">
+        <label> name <span class="text-danger">*</span></label>
+        <input [(ngModel)]="restaurant.name"
+               [class.is-invalid]="errors.get('name')"
+               type="name" class="form-control"/>
+        <div *ngIf="errors.get('name')" class="invalid-feedback">
+          {{errors.get('name')}}
+        </div>
+      </div>
+      <div class="form-group">
+        <label> owner user ID <span class="text-danger">*</span></label>
+        <input [(ngModel)]="restaurant.owner.id"
+               [class.is-invalid]="errors.get('owner')"
+               type="name" class="form-control"/>
+        <div *ngIf="errors.get('owner')" class="invalid-feedback">
+          {{errors.get('owner')}}
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light-primary font-weight-bold" (click)="activeModal.close()">Close</button>
+    <button type="button" class="btn btn-primary font-weight-bold" (click)="save()">Save</button>
+  </div>
+</div>

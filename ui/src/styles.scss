@@ -1,0 +1,9 @@
+/* You can add global styles to this file, and also import other style files */
+
+//@import "style/style";
+
+/* Importing Bootstrap SCSS file. */
+@import '~bootstrap/scss/bootstrap';
+
+@import '~angular-notifier/styles/core.scss';
+@import '~angular-notifier/styles/themes/theme-material';

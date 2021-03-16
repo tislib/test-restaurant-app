@@ -8,7 +8,7 @@ plugins {
     id 'pmd'
 }
 
-apply from: 'gradle/checks.gradle';
+apply from: 'gradle/checks.gradle'
 
 group = 'net.tislib.restaurantapp'
 version = '1.0'
@@ -18,12 +18,28 @@ repositories {
     mavenCentral()
 }
 
+bootJar {
+    archiveFileName = 'restaurant-review-app.jar'
+}
+
 dependencies {
     // spring boot and its dependencies
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+    annotationProcessor group: 'org.springframework.boot', name: 'spring-boot-configuration-processor'
+
+    // jwt token helper library
+
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
+    runtime 'io.jsonwebtoken:jjwt-impl:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+
+    // database
+    runtimeOnly 'org.postgresql:postgresql'
 
     //spring metrics
     implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: micrometerVersion
@@ -32,12 +48,23 @@ dependencies {
     implementation group: 'org.mapstruct', name: 'mapstruct-jdk8', version: mapstructVersion
     annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: mapstructVersion
 
-    // h2 embedded database for integration tests
-    testCompile group: 'com.h2database', name: 'h2', version: h2DbVersion
 
-    testImplementation('org.springframework.boot:spring-boot-starter-test') {
-        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-    }
+    // rest api documentation
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: springDocVersion
+
+    // database versioning
+    implementation group: 'org.flywaydb', name: 'flyway-core'
+
+    // h2 embedded database for integration tests and uat
+    implementation group: 'com.h2database', name: 'h2'
+
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+
+    // for testing
+
+    // https://mvnrepository.com/artifact/org.hamcrest/hamcrest-all
+    testImplementation group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
+
 }
 
 test {
