@@ -14,8 +14,9 @@
                  [(ngModel)]="dateOfVisit"
                  [class.is-invalid]="errors.get('dateOfVisit')"
                  ngbDatepicker
-                 type="dateAtVisit" class="form-control"/>
-          <button (click)="d.toggle()" type="button">select date</button>
+                 type="text"
+                 class="form-control"
+          (click)="d.toggle()"/>
         </div>
       </div>
       <div class="col-lg-6">
