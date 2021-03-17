@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("PMD")
 class RestaurantReviewStatsServiceImplTest {
 
     private static final long ONE = 1L;
@@ -36,10 +37,8 @@ class RestaurantReviewStatsServiceImplTest {
     @Mock
     private ReviewRepository reviewRepository;
 
-
     @Test
-    @SuppressWarnings("PMD")
-    void callInitAndNotComputedReviewsShouldBeComputed() throws Exception {
+    void callInitAndExpectReviewsCalculatingAsExpected() {
         // Arrange
         Restaurant restaurant = prepareRestaurant();
 

@@ -8,7 +8,6 @@ import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.data.mapper.UserMapper;
 import net.tislib.restaurantapp.exception.InvalidFieldException;
 import net.tislib.restaurantapp.model.User;
-import net.tislib.restaurantapp.model.UserRole;
 import net.tislib.restaurantapp.model.repository.UserRepository;
 import net.tislib.restaurantapp.service.AuthenticationService;
 import net.tislib.restaurantapp.service.UserService;
