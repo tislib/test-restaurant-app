@@ -2,6 +2,7 @@ package net.tislib.restaurantapp.exception;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import io.jsonwebtoken.JwtException;
 import lombok.extern.log4j.Log4j2;
 import net.tislib.restaurantapp.data.authentication.ErrorResponse;
 import net.tislib.restaurantapp.data.authentication.ErrorResponse.FieldError;
@@ -9,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,8 +34,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler({BadCredentialsException.class, AuthenticationException.class})
-    public ResponseEntity<ErrorResponse> handleAuthenticationException(Exception exception) {
+    // we handle both AuthenticationException and JwtException as authentication problem
+    @ExceptionHandler({AuthenticationException.class, JwtException.class})
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException exception) {
         ErrorResponse response = new ErrorResponse(exception.getMessage());
 
         log.debug(exception.getMessage());
@@ -65,6 +66,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception) {
         ErrorResponse response;
 
+        // in case of InvalidFormatException we need to return field name to show which field has formatting problem
         if (exception.getCause() instanceof InvalidFormatException) {
             InvalidFormatException cause = (InvalidFormatException) exception.getCause();
             response = new ErrorResponse("json parsing error", Collections.singleton(
@@ -103,7 +105,7 @@ public class GlobalExceptionHandler {
                         .build()
         ));
 
-        log.warn(exception.getMessage(), exception);
+        log.warn(exception.getMessage());
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -113,6 +115,7 @@ public class GlobalExceptionHandler {
         Set<String> rejectedFieldNames = new HashSet<>();
         Set<FieldError> rejectedFields = new HashSet<>();
 
+        // in case of MethodArgumentNotValidException, collect and return invalid fields
         exception.getBindingResult()
                 .getFieldErrors()
                 .forEach(item -> {

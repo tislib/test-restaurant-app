@@ -11,6 +11,7 @@ import {ReviewModalFormComponent} from '../../components/review-modal-form/revie
 import {ReviewReplyFormComponent} from '../../components/review-reply-form/review-reply-form.component';
 import {OwnerReply} from '../../resource/owner-reply.resource';
 import {AuthenticationService} from '../../service/authentication-service';
+import {faEdit, faPlus, faReply, faTimes, faUtensils} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-restaurant',
@@ -18,6 +19,13 @@ import {AuthenticationService} from '../../service/authentication-service';
   styleUrls: ['./restaurant.component.scss']
 })
 export class RestaurantComponent implements OnInit {
+
+  editIcon = faEdit;
+  deleteIcon = faTimes;
+  addIcon = faPlus;
+  replyIcon = faReply;
+  restaurantIcon = faUtensils;
+
   public restaurant?: Restaurant;
   private restaurantId?: number;
   public reviewPagedData: PageContainer<Review> = {} as PageContainer<Review>;

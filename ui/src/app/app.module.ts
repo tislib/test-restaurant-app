@@ -26,6 +26,9 @@ import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {ReviewModalFormComponent} from './components/review-modal-form/review-modal-form.component';
 import { ReviewReplyFormComponent } from './components/review-reply-form/review-reply-form.component';
 import { IfHasRoleDirective } from './directives/if-has-role.directive';
+import {NotifierModule} from 'angular-notifier';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ReviewStarsComponent } from './components/review-stars/review-stars.component';
 
 @NgModule({
   declarations: [
@@ -44,14 +47,17 @@ import { IfHasRoleDirective } from './directives/if-has-role.directive';
     UsersComponent,
     ReviewModalFormComponent,
     ReviewReplyFormComponent,
-    IfHasRoleDirective
+    IfHasRoleDirective,
+    ReviewStarsComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    NgbModule
+    NgbModule,
+    NotifierModule,
+    FontAwesomeModule
   ],
   providers: [
     {

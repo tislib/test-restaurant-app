@@ -19,15 +19,11 @@ public class ApiConstants {
     public static final String API_REVIEWS = API_RESTAURANTS + "/{restaurantId}/reviews";
 
     // paths
-
     public static final String PATH_ID = "/{id}";
     public static final String PATH_TOKEN = "/token";
     public static final String PATH_REGISTER = "/register";
     public static final String PATH_ANT_MATCH_ALL = "/**";
 
     public static final String PATH_OWNER_REPLY = PATH_ID + "/owner-reply";
-
-    // parameters
-
 
 }

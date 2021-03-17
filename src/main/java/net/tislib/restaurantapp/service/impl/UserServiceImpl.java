@@ -1,6 +1,7 @@
 package net.tislib.restaurantapp.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import net.tislib.restaurantapp.controller.UserController;
 import net.tislib.restaurantapp.data.PageContainer;
 import net.tislib.restaurantapp.data.UserResource;
@@ -27,6 +28,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
@@ -36,21 +38,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResource create(UserResource resource) {
+        log.trace("create user request: {}", resource);
+
+        /*
+            validate user request data, most of validations is done by annotation based validation rules
+            validation method is used for handling complex validation which
+         */
         validateUser(resource, null);
 
         User entity = mapper.from(resource);
 
         entity.setPassword(passwordEncoder.encode(resource.getPassword()));
         entity.setId(null);
-        entity.setRole(UserRole.REGULAR);
 
         repository.save(entity);
+
+        log.info("user created with details: {}", entity);
 
         return get(entity.getId());
     }
 
     @Override
     public PageContainer<UserResource> list(Pageable pageable) {
+        log.trace("list user request: {}", pageable);
+
         return mapper.mapPage(repository.findAll(pageable))
                 .map(item -> item.add(linkTo(methodOn(UserController.class)
                         .get(item.getId()))
@@ -59,7 +70,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResource get(Long id) {
+        log.trace("get user by id: {}", id);
+
         User entity = getEntity(id);
+
+        log.info("user found with details: {}", entity);
 
         return mapper.to(entity)
                 .add(linkTo(methodOn(UserController.class)
@@ -67,32 +82,43 @@ public class UserServiceImpl implements UserService {
                         .withSelfRel());
     }
 
-    private User getEntity(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("user not found with id: " + id));
-    }
-
     @Override
     public UserResource update(Long id, UserResource resource) {
-        User existingEntity = getEntity(id);
+        log.trace("update user by id: {}, resource: {}", id, resource);
 
-        validateUser(resource, existingEntity);
+        User entity = getEntity(id);
+
+        validateUser(resource, entity);
 
         resource.setId(id);
 
-        mapper.mapFrom(existingEntity, resource);
+        mapper.mapFrom(entity, resource);
 
         // change password if password changed
         if (!StringUtils.isEmpty(resource.getPassword())) {
-            existingEntity.setPassword(passwordEncoder.encode(resource.getPassword()));
-        } else {
-            // reset password back if no change needed
-            existingEntity.setPassword(existingEntity.getPassword());
+            entity.setPassword(passwordEncoder.encode(resource.getPassword()));
         }
 
-        repository.save(existingEntity);
+        repository.save(entity);
+
+        log.info("user updated with details: {}", entity);
 
         return get(resource.getId());
+    }
+
+    @Override
+    public void delete(Long id) {
+        log.trace("delete user by id: {}", id);
+
+        User entity = getEntity(id);
+
+        if (Objects.equals(entity.getId(), authenticationService.getCurrentUser().getId())) {
+            throw new IllegalArgumentException("you cannot remove own user");
+        }
+
+        repository.delete(entity);
+
+        log.info("user deleted with details: {}", entity);
     }
 
     private void validateUser(UserResource resource, User existingEntity) {
@@ -108,14 +134,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public void delete(Long id) {
-        User existingEntity = getEntity(id);
-
-        if (Objects.equals(existingEntity.getId(), authenticationService.getCurrentUser().getId())) {
-            throw new IllegalArgumentException("you cannot remove own user");
-        }
-
-        repository.delete(existingEntity);
+    private User getEntity(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("user not found with id: " + id));
     }
 }

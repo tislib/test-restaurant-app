@@ -14,6 +14,7 @@ public interface ResourceEntityMapper<R, E> {
 
     void mapTo(@MappingTarget R resource, E entity);
 
+    // mapPage method is for transforming spring data page to our page container
     default PageContainer<R> mapPage(Page<E> page) {
         Page<R> resourcePage = page.map(this::to);
 

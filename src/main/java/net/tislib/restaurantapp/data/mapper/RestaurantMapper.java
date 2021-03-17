@@ -5,8 +5,11 @@ import net.tislib.restaurantapp.model.Restaurant;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring", uses = {ReviewMapper.class, UserMapper.class})
+@Mapper(componentModel = "spring",
+        uses = {ReviewMapper.class, UserMapper.class},
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RestaurantMapper extends ResourceEntityMapper<RestaurantResource, Restaurant> {
 
     @Mapping(source = "reviewStats.ratingAverage", target = "rating")

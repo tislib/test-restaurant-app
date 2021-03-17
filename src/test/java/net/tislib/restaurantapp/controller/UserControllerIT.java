@@ -18,10 +18,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class UserControllerIT extends BaseIntegrationTest {
 
-    public static final String USER_1_FULL_NAME = "testuser1";
-    public static final int USER_ID_1 = 105;
-    public static final int USER_ID_2 = 106;
-    public static final int USER_ID_3 = 107;
+    private static final String USER_1_FULL_NAME = "testuser1";
+    private static final int USER_ID_1 = 105;
+    private static final int USER_ID_2 = 106;
+    private static final int USER_ID_3 = 107;
+    private static final String NEW_FULL_NAME = "new-full-name";
+    private static final String NEW_FULL_NAME_APP_COM = "new-full-name@app.com";
 
     @Test
     @SuppressWarnings("PMD")
@@ -32,7 +34,7 @@ public class UserControllerIT extends BaseIntegrationTest {
 
         mockMvc.perform(post(API_USERS).content(jsonContent(resource)))
                 .andExpect(ResultMatcher.matchAll(
-                        status().isOk()
+                        status().isCreated()
                 ))
                 .andExpect(jsonPath(UserResource.Fields.fullName).value(USER_1_FULL_NAME));
     }
@@ -57,7 +59,7 @@ public class UserControllerIT extends BaseIntegrationTest {
 
         mockMvc.perform(delete(API_USERS + PATH_ID, USER_ID_2))
                 .andExpect(ResultMatcher.matchAll(
-                        status().isOk()
+                        status().isNoContent()
                 ));
 
         mockMvc.perform(get(API_USERS + PATH_ID, USER_ID_2))
@@ -84,8 +86,8 @@ public class UserControllerIT extends BaseIntegrationTest {
         auth(TestUser.ADMIN_USER);
 
         UserResource resource = prepareUser();
-        resource.setFullName("new-full-name");
-        resource.setEmail("new-full-name@app.com");
+        resource.setFullName(NEW_FULL_NAME);
+        resource.setEmail(NEW_FULL_NAME_APP_COM);
 
         mockMvc.perform(put(API_USERS + PATH_ID, USER_ID_3)
                 .content(jsonContent(resource)))
@@ -98,12 +100,59 @@ public class UserControllerIT extends BaseIntegrationTest {
 
     @Test
     @SuppressWarnings("PMD")
+    public void updateUserWithoutChangingPasswordByAdminUserAndGet200Ok() throws Exception {
+        auth(TestUser.ADMIN_USER);
+
+        UserResource resource = prepareUser();
+        resource.setFullName(NEW_FULL_NAME);
+        resource.setEmail(NEW_FULL_NAME_APP_COM);
+        resource.setPassword(null);
+
+        mockMvc.perform(put(API_USERS + PATH_ID, USER_ID_3)
+                .content(jsonContent(resource)))
+                .andExpect(ResultMatcher.matchAll(
+                        status().isOk(),
+                        jsonPath(UserResource.Fields.fullName).value(resource.getFullName()),
+                        jsonPath(UserResource.Fields.email).value(resource.getEmail())
+                ));
+    }
+
+    @Test
+    @SuppressWarnings("PMD")
+    public void updateUserEmailToUsedEmailByAnotherUserAndGet400BadRequest() throws Exception {
+        auth(TestUser.ADMIN_USER);
+
+        UserResource resource = prepareUser();
+        resource.setFullName(NEW_FULL_NAME);
+        resource.setEmail("user@testapp.com");
+        resource.setPassword(null);
+
+        mockMvc.perform(put(API_USERS + PATH_ID, USER_ID_3)
+                .content(jsonContent(resource)))
+                .andExpect(ResultMatcher.matchAll(
+                        status().isBadRequest()
+                ));
+    }
+
+    @Test
+    @SuppressWarnings("PMD")
     public void deleteUserByOwnerUserAndGet403PermissionDenied() throws Exception {
         auth(TestUser.OWNER_USER_1);
 
         mockMvc.perform(delete(API_USERS + PATH_ID, USER_ID_1))
                 .andExpect(ResultMatcher.matchAll(
                         status().isForbidden()
+                ));
+    }
+
+    @Test
+    @SuppressWarnings("PMD")
+    public void deleteOwnUserByAdminAndGetPermissionDenied() throws Exception {
+        auth(TestUser.ADMIN_USER);
+
+        mockMvc.perform(delete(API_USERS + PATH_ID, 104))
+                .andExpect(ResultMatcher.matchAll(
+                        status().isBadRequest()
                 ));
     }
 

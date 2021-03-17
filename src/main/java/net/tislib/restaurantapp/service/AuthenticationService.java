@@ -8,12 +8,14 @@ import net.tislib.restaurantapp.data.authentication.TokenUserDetails;
 import net.tislib.restaurantapp.data.authentication.UserRegistrationRequest;
 import net.tislib.restaurantapp.model.User;
 
+import java.util.Optional;
+
 public interface AuthenticationService {
     TokenPair token(TokenCreateRequest tokenCreateRequest);
 
     UserResource register(UserRegistrationRequest request);
 
-    TokenAuthentication getTokenAuthentication(String token);
+    Optional<TokenAuthentication> getTokenAuthentication(String token);
 
     TokenUserDetails getTokenInfo();
 

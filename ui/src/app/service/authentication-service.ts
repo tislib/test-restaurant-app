@@ -10,7 +10,7 @@ import {User} from '../resource/user.resource';
 import {Injectable} from '@angular/core';
 import {TokenDetailsResource} from '../resource/authentication/token-details.resource';
 import {Router} from '@angular/router';
-import {catchError, map} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 
 @Injectable()
 export class AuthenticationService {
@@ -26,7 +26,10 @@ export class AuthenticationService {
 
   public getToken(forceCheck: boolean = false): Observable<TokenUserDetails> {
     if (!this.tokenDetails || forceCheck) {
-      return this.httpClient.get<TokenUserDetails>(API_AUTHENTICATION + PATH_TOKEN);
+      return this.httpClient.get<TokenUserDetails>(API_AUTHENTICATION + PATH_TOKEN)
+        .pipe(tap((tokenDetails) => {
+          this.tokenDetails = tokenDetails;
+        }));
     }
 
     return of(this.tokenDetails);
@@ -58,6 +61,7 @@ export class AuthenticationService {
 
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('refresh_token_expiry');
+    this.tokenDetails = undefined;
   }
 
   refreshAndValidateToken(): Observable<boolean> {

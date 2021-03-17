@@ -19,7 +19,7 @@
           {{errors.get('name')}}
         </div>
       </div>
-      <div class="form-group">
+      <div *appIfHasRole="'ADMIN'" class="form-group">
         <label> owner user ID <span class="text-danger">*</span></label>
         <input [(ngModel)]="restaurant.owner.id"
                [class.is-invalid]="errors.get('owner')"

@@ -32,5 +32,4 @@ build/
 .gradle
 lombok.config
 /out
-plugininterface/out
 /dev

@@ -4,6 +4,7 @@ import {User} from '../../resource/user.resource';
 import {UserService} from '../../service/user-service';
 import {UserFormComponent} from '../../components/user-form/user-form.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {faEdit, faPlus, faTimes} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-users',
@@ -11,6 +12,10 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./users.component.scss']
 })
 export class UsersComponent implements OnInit {
+
+  editIcon = faEdit;
+  deleteIcon = faTimes;
+  addIcon = faPlus;
 
   public userPagedData: PageContainer<User> = {} as PageContainer<User>;
 

@@ -1,6 +1,7 @@
 package net.tislib.restaurantapp.model;
 
 import lombok.Data;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,6 +18,7 @@ public class OwnerReply {
     private Long id;
 
     @OneToOne
+    @ToString.Exclude
     private Review review;
 
     private String comment;

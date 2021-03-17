@@ -36,7 +36,7 @@
           <div class="btn btn-icon btn-hover-transparent-white w-sm-auto d-flex align-items-center btn-lg px-2"
                id="kt_quick_user_toggle">
             <div class="d-flex flex-column text-right pr-sm-3">
-              <button (click)="logout()">logout</button>
+              <button class="e2e-logout-button btn btn-secondary" (click)="logout()">logout</button>
               <span
                 class="text-white opacity-50 font-weight-bold font-size-sm d-none d-sm-inline">{{tokenDetails.user.email}}</span>
             </div>

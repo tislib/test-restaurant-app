@@ -14,5 +14,6 @@ variable "ui_base_name" {
 
 locals {
   repository    = "hub.tisserv.net"
-  service_image = "${local.repository}/${var.api_base_name}:${var.DOCKER_IMG_TAG}"
+  api_service_image = "${local.repository}/${var.api_base_name}:${var.DOCKER_IMG_TAG}"
+  ui_service_image = "${local.repository}/${var.ui_base_name}:${var.DOCKER_IMG_TAG}"
 }

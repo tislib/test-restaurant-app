@@ -2,6 +2,7 @@ package net.tislib.restaurantapp.base;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import net.tislib.restaurantapp.constant.SecurityConstants;
 import net.tislib.restaurantapp.data.UserResource;
 import net.tislib.restaurantapp.data.authentication.TokenCreateRequest;
 import net.tislib.restaurantapp.data.authentication.TokenPair;
@@ -9,6 +10,7 @@ import net.tislib.restaurantapp.data.authentication.TokenUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -17,6 +19,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import static net.tislib.restaurantapp.constant.ApiConstants.API_AUTHENTICATION;
 import static net.tislib.restaurantapp.constant.ApiConstants.PATH_TOKEN;
+import static net.tislib.restaurantapp.constant.SecurityConstants.BEARER;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -25,7 +28,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @AutoConfigureMockMvc
 public class BaseIntegrationTest {
 
-    public static final String APPLICATION_JSON = "application/json";
     protected final MockMvcExtended mockMvc = new MockMvcExtended();
 
     @Autowired
@@ -37,15 +39,16 @@ public class BaseIntegrationTest {
     protected String accessToken;
 
     protected UserResource currentUser;
+    protected String refreshToken;
 
     public class MockMvcExtended {
         @SneakyThrows
         public ResultActions perform(RequestBuilder requestBuilder) {
             return mockMvcMain.perform(servletContext -> {
-                MockHttpServletRequest res = requestBuilder.buildRequest(servletContext);
-                res.addHeader("Authorization", "Bearer " + accessToken);
-                res.setContentType(APPLICATION_JSON);
-                return res;
+                MockHttpServletRequest request = requestBuilder.buildRequest(servletContext);
+                request.addHeader(SecurityConstants.AUTHORIZATION_HEADER, prepareAuthorizationHeaderValue(accessToken));
+                request.setContentType(MediaType.APPLICATION_JSON.toString());
+                return request;
             });
         }
     }
@@ -75,7 +78,7 @@ public class BaseIntegrationTest {
         tokenCreateRequest.setPassword(testUser.getPassword());
 
         String content = mockMvcMain.perform(post(API_AUTHENTICATION + PATH_TOKEN)
-                .contentType(APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonContent(tokenCreateRequest)))
                 .andReturn()
                 .getResponse()
@@ -84,11 +87,18 @@ public class BaseIntegrationTest {
         TokenPair result = mapper.readValue(content, TokenPair.class);
 
         this.accessToken = result.getAccessToken().getContent();
+        this.refreshToken = result.getRefreshToken().getContent();
     }
 
     @SneakyThrows
     public byte[] jsonContent(Object object) {
         return mapper.writeValueAsBytes(object);
+    }
+
+
+
+    public static String prepareAuthorizationHeaderValue(String token) {
+        return BEARER + " " + token;
     }
 
 }

@@ -22,10 +22,17 @@ export class TokenInterceptor implements HttpInterceptor {
 
     let ignoreAuthorization = false;
 
+    // authentication request
     if ((request.url === API_AUTHENTICATION + PATH_TOKEN) && request.method === 'POST') {
       ignoreAuthorization = true;
     }
 
+    // refresh token request
+    if ((request.url === API_AUTHENTICATION + PATH_TOKEN) && request.method === 'PATCH') {
+      ignoreAuthorization = true;
+    }
+
+    // register request
     if (request.url === API_AUTHENTICATION + PATH_REGISTER) {
       ignoreAuthorization = true;
     }
@@ -54,6 +61,7 @@ export class TokenInterceptor implements HttpInterceptor {
       return this.auth.refreshAndValidateToken().pipe(flatMap(() => {
         request = this.prepareToken(request);
 
+        console.log('handling next as ordinary');
         return next.handle(request);
       }));
     }

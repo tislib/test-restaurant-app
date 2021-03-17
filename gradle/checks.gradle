@@ -17,14 +17,20 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.7
+                minimum = 0.85
             }
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
-                minimum = 0.7
+                minimum = 0.85
             }
             excludes = [
+                    'net.tislib.restaurantapp',
+                    'net.tislib.restaurantapp.data',
+                    'net.tislib.restaurantapp.data.authentication',
+                    'net.tislib.restaurantapp.data.mapper',
+                    'net.tislib.restaurantapp.exception',
+                    'net.tislib.restaurantapp.model',
                     'net.tislib.restaurantapp.const'
             ]
         }

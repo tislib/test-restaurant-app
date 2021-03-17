@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("PMD")
 class RestaurantReviewStatsServiceImplTest {
 
-    private final static long ONE = 1L;
+    private static final long ONE = 1L;
 
     @InjectMocks
     private RestaurantReviewStatsServiceImpl reviewStatsService;
@@ -52,7 +52,7 @@ class RestaurantReviewStatsServiceImplTest {
         RestaurantReviewStats reviewStats = prepareRestaurantReviewStats();
 
         Optional<RestaurantReviewStats> optionalRestaurantReviewStats = Optional.of(reviewStats);
-        //Act
+        // Act
         when(reviewRepository.findByComputed(false)).thenReturn(reviews);
         when(repository.findByRestaurantId(ONE)).thenReturn(optionalRestaurantReviewStats);
         doNothing().when(repository).exclusiveUpdateReviewStats(reviewStats);
@@ -62,7 +62,7 @@ class RestaurantReviewStatsServiceImplTest {
         ArgumentCaptor<Review> reviewArgumentCaptor = ArgumentCaptor.forClass(Review.class);
         verify(reviewRepository).save(reviewArgumentCaptor.capture());
 
-        //Assert
+        // Assert
         verify(reviewRepository).findByComputed(false);
         verify(reviewRepository).save(review);
         verify(repository).findByRestaurantId(ONE);

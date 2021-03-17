@@ -1,14 +1,14 @@
 resource "kubernetes_service" "restaurant-app-ui" {
   metadata {
-    name = var.api_base_name
+    name = var.ui_base_name
 
     labels = {
-      app = var.api_base_name
+      app = var.ui_base_name
     }
   }
   spec {
     selector = {
-      app = var.api_base_name
+      app = var.ui_base_name
     }
 
     type = "NodePort"

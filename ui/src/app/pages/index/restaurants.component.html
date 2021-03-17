@@ -12,7 +12,9 @@
         <!--end::Page Heading-->
       </div>
       <div class="d-flex align-items-center">
-        <a *appIfHasRole="'OWNER,ADMIN'" (click)="add()" class="btn btn-light-primary font-weight-bolder btn-sm">New Restaurant</a>
+        <a *appIfHasRole="'OWNER,ADMIN'" (click)="add()" class="btn btn-light-primary font-weight-bolder btn-sm">
+          <fa-icon [icon]="addIcon" size="2x"></fa-icon>
+        </a>
       </div>
       <!--end::Toolbar-->
     </div>
@@ -30,41 +32,53 @@
           <div class="col-xl-3"></div>
           <div class="col-xl-6">
             <!--begin::List Widget 7-->
-            <div class="card card-custom gutter-b card-stretch">
-              <!--begin::Header-->
-              <!--end::Header-->
-              <!--begin::Body-->
-              <div *ngIf="restaurantPagedData" class="card-body pt-0">
-                <!--begin::Item-->
-                <div *ngFor="let item of restaurantPagedData.content" class="d-flex align-items-center flex-wrap mb-8">
-                  <!--begin::Symbol-->
-                  <div class="symbol symbol-50 symbol-light mr-5">
-                      <span class="symbol-label">
-                        <img src="assets/media/svg/misc/006-plurk.svg" class="h-50 align-self-center" alt=""/>
-                      </span>
-                  </div>
-                  <!--end::Symbol-->
-                  <!--begin::Text-->
-                  <div class="d-flex flex-column flex-grow-1 mr-2">
-                    <a [routerLink]="['/restaurant/' + item.id]"
-                       class="font-weight-bold text-dark-75 text-hover-primary font-size-lg mb-1">{{item.name}}</a>
 
-                    <span class="text-muted font-weight-bold">By {{item.owner.email}}</span>
+            <!--begin::Header-->
+            <!--end::Header-->
+            <!--begin::Body-->
+            <div *ngIf="restaurantPagedData">
+              <!--begin::Item-->
+              <div *ngFor="let item of restaurantPagedData.content" class="d-flex align-items-center flex-wrap mb-8">
+                <div class="card card-custom gutter-b" style="width: 500px;">
+                  <div class="card-header">
+                    <div class="card-title">
+                      <h3 class="card-label">
+                        <fa-icon [icon]="restaurantIcon" size="2x"></fa-icon>
+                        &nbsp;
+                        &nbsp;
+                        <a [routerLink]="['/restaurant/' + item.id]">{{item.name}}</a>
+                      </h3>
+                    </div>
+                    <div class="card-toolbar">
+                      <span
+                        class="label label-xl label-light label-inline my-lg-0 my-2 text-dark-50 font-weight-bolder">{{item.rating}}</span>
+
+                      &nbsp;
+                      &nbsp;
+
+                      <div *appIfHasRole="'ADMIN'" class="actions">
+                        <a href="javascript:" (click)="edit(item.id)">
+                          <fa-icon size="2x" [icon]="editIcon"></fa-icon>
+                        </a>
+                        &nbsp;
+                        &nbsp;
+                        <a href="javascript:" (click)="delete(item.id)">
+                          <fa-icon size="2x" [icon]="deleteIcon"></fa-icon>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <span class="text-muted font-weight-bold">Restaurant owner {{item.owner.email}}</span>
+                    <br/>
                     <span class="text-muted font-weight-bold">Review count {{item.ratingCount}}</span>
                   </div>
-                  <!--end::Text-->
-                  <span
-                    class="label label-xl label-light label-inline my-lg-0 my-2 text-dark-50 font-weight-bolder">{{item.rating}}</span>
-                  <div>
-                    <button *appIfHasRole="'ADMIN'" (click)="edit(item.id)">edit</button>
-                    <button *appIfHasRole="'ADMIN'" (click)="delete(item.id)">delete</button>
-                  </div>
                 </div>
-                <!--end::Item-->
-                <!--end::Item-->
               </div>
-              <!--end::Body-->
+              <!--end::Item-->
+              <!--end::Item-->
             </div>
+            <!--end::Body-->
             <!--end::List Widget 7-->
           </div>
         </div>

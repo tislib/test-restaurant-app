@@ -10,12 +10,14 @@ import net.tislib.restaurantapp.data.authentication.TokenRefreshRequest;
 import net.tislib.restaurantapp.data.authentication.TokenUserDetails;
 import net.tislib.restaurantapp.data.authentication.UserRegistrationRequest;
 import net.tislib.restaurantapp.service.AuthenticationService;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import static net.tislib.restaurantapp.constant.ApiConstants.API_AUTHENTICATION;
@@ -32,6 +34,7 @@ public class AuthenticationController {
 
     @PostMapping(PATH_TOKEN)
     @Operation(summary = "login", description = "authenticate user with credentials and create user")
+    @ResponseStatus(HttpStatus.CREATED)
     public TokenPair createToken(@RequestBody @Validated TokenCreateRequest tokenCreateRequest) {
         return service.token(tokenCreateRequest);
     }

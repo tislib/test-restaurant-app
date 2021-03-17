@@ -1,0 +1,10 @@
+<span *ngFor="let star of stars">
+  <ng-container *ngIf="showOnly">
+    <fa-icon class="star-icon" [class.selected]="starCount >= star" [icon]="faStar"></fa-icon>
+  </ng-container>
+  <ng-container *ngIf="!showOnly">
+    <a href="javascript:" (click)="changeStarCount(star)">
+      <fa-icon class="star-icon" [class.selected]="starCount >= star" [icon]="faStar"></fa-icon>
+    </a>
+  </ng-container>
+</span>

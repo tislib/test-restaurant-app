@@ -1,6 +1,7 @@
 package net.tislib.restaurantapp.model;
 
 import lombok.Data;
+import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 
 import javax.persistence.Entity;
@@ -22,6 +23,7 @@ public class RestaurantReviewStats {
     private Long id;
 
     @OneToOne
+    @ToString.Exclude
     private Restaurant restaurant;
 
     private BigDecimal ratingAverage = BigDecimal.ZERO;
