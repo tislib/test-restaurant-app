@@ -79,11 +79,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .build();
     }
 
-    @Override
+
     /*
       This method is responsible for authentication by email and password
       returning result contains
      */
+    @Override
     public TokenPair token(TokenCreateRequest tokenCreateRequest) {
         log.trace("token request / request user: {}", tokenCreateRequest.getEmail());
 

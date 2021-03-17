@@ -5,7 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface RestaurantReviewStatsRepository extends JpaRepository<RestaurantReviewStats, Long>, RestaurantReviewStatsExtendedRepository {
+public interface RestaurantReviewStatsRepository extends JpaRepository<RestaurantReviewStats, Long>,
+        RestaurantReviewStatsExtendedRepository {
 
     Optional<RestaurantReviewStats> findByRestaurantId(long restaurantId);
 

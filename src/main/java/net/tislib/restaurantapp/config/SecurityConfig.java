@@ -27,14 +27,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthenticationService authenticationService;
 
     @Override
-    @SuppressWarnings("PMD")
     protected void configure(HttpSecurity http) throws Exception {
         // Enable CORS and disable CSRF
-        http = http.cors().disable().csrf().disable();
+        http.cors()
+                .disable()
+                .csrf()
+                .disable();
 
         // Set session management to stateless
-        http = http
-                .sessionManagement()
+        http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and();
 

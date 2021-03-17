@@ -21,7 +21,9 @@ public class RestaurantReviewStatsExtendedRepositoryImpl implements RestaurantRe
     @Override
     @Transactional
     public void exclusiveUpdateReviewStats(RestaurantReviewStats reviewStatsUpdate) {
-        RestaurantReviewStats reviewStats = entityManager.find(RestaurantReviewStats.class, reviewStatsUpdate.getId(), LockModeType.OPTIMISTIC);
+        RestaurantReviewStats reviewStats = entityManager.find(RestaurantReviewStats.class,
+                reviewStatsUpdate.getId(),
+                LockModeType.OPTIMISTIC);
 
         reviewStats.setRatingAverage(reviewStatsUpdate.getRatingAverage());
         reviewStats.setRatingCount(reviewStatsUpdate.getRatingCount());
