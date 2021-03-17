@@ -22,6 +22,7 @@ import net.tislib.restaurantapp.data.authentication.UserRegistrationRequest;
 import net.tislib.restaurantapp.data.mapper.UserMapper;
 import net.tislib.restaurantapp.exception.InvalidFieldException;
 import net.tislib.restaurantapp.model.User;
+import net.tislib.restaurantapp.model.UserRole;
 import net.tislib.restaurantapp.model.repository.UserRepository;
 import net.tislib.restaurantapp.service.AuthenticationService;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -174,6 +175,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setFullName(request.getFullName());
+        user.setRole(UserRole.REGULAR);
 
         // encode user password with bcrypt encoding
         user.setPassword(passwordEncoder.encode(request.getPassword()));
