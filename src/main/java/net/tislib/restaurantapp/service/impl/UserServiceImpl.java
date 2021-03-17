@@ -50,7 +50,6 @@ public class UserServiceImpl implements UserService {
 
         entity.setPassword(passwordEncoder.encode(resource.getPassword()));
         entity.setId(null);
-        entity.setRole(UserRole.REGULAR);
 
         repository.save(entity);
 

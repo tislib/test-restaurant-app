@@ -4,6 +4,7 @@ import {PageContainer} from '../../resource/base/page-container';
 import {Restaurant} from '../../resource/restaurant.resource';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {RestaurantFormComponent} from '../../components/restaurant-form/restaurant-form.component';
+import {faEdit, faTimes, faPlus, faUtensils} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-restaurants',
@@ -11,6 +12,11 @@ import {RestaurantFormComponent} from '../../components/restaurant-form/restaura
   styleUrls: ['./restaurants.component.scss']
 })
 export class RestaurantsComponent implements OnInit {
+
+  editIcon = faEdit;
+  deleteIcon = faTimes;
+  addIcon = faPlus;
+  restaurantIcon = faUtensils;
 
   public restaurantPagedData?: PageContainer<Restaurant>;
 

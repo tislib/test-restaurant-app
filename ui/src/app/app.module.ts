@@ -27,6 +27,8 @@ import {ReviewModalFormComponent} from './components/review-modal-form/review-mo
 import { ReviewReplyFormComponent } from './components/review-reply-form/review-reply-form.component';
 import { IfHasRoleDirective } from './directives/if-has-role.directive';
 import {NotifierModule} from 'angular-notifier';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { ReviewStarsComponent } from './components/review-stars/review-stars.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +47,8 @@ import {NotifierModule} from 'angular-notifier';
     UsersComponent,
     ReviewModalFormComponent,
     ReviewReplyFormComponent,
-    IfHasRoleDirective
+    IfHasRoleDirective,
+    ReviewStarsComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +56,8 @@ import {NotifierModule} from 'angular-notifier';
     FormsModule,
     HttpClientModule,
     NgbModule,
-    NotifierModule
+    NotifierModule,
+    FontAwesomeModule
   ],
   providers: [
     {

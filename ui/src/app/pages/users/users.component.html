@@ -12,7 +12,9 @@
         <!--end::Page Heading-->
       </div>
       <div class="d-flex align-items-center">
-        <a *appIfHasRole="'ADMIN'" (click)="add()" class="btn btn-light-primary font-weight-bolder btn-sm">New User</a>
+        <a *appIfHasRole="'ADMIN'" (click)="add()" class="btn btn-light-primary font-weight-bolder btn-sm">
+          <fa-icon [icon]="addIcon" size="2x"></fa-icon>
+        </a>
       </div>
       <!--end::Toolbar-->
     </div>
@@ -41,8 +43,14 @@
             <td>{{item.role}}</td>
             <td>{{item.fullName}}</td>
             <td *appIfHasRole="'ADMIN'">
-              <button (click)="edit(item.id)">edit</button>
-              <button (click)="delete(item.id)">delete</button>
+              <a href="javascript:" (click)="edit(item.id)">
+                <fa-icon size="2x" [icon]="editIcon"></fa-icon>
+              </a>
+              &nbsp;
+              &nbsp;
+              <a href="javascript:" (click)="delete(item.id)">
+                <fa-icon size="2x" [icon]="deleteIcon"></fa-icon>
+              </a>
             </td>
           </tr>
           </tbody>
