@@ -50,6 +50,7 @@ class RestaurantReviewStatsServiceImplTest {
         Review expectedReview = prepareExpectedReview(restaurant);
 
         RestaurantReviewStats reviewStats = prepareRestaurantReviewStats();
+        reviewStats.setRestaurant(restaurant);
 
         Optional<RestaurantReviewStats> optionalRestaurantReviewStats = Optional.of(reviewStats);
         // Act

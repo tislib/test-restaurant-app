@@ -38,10 +38,10 @@ import static org.mockito.Mockito.when;
 @SuppressWarnings("PMD")
 class ReviewServiceImplTest {
 
-    private final static String SAMPLE_REVIEW_TIME = "2021-03-16T10:37:30.00Z";
-    private final static Long SAMPLE_ID_ONE = 1L;
-    private final static String SAMPLE_COMMENT = "SampleComment";
-    private final static short SAMPLE_STAR_COUNT = 5;
+    private static final String SAMPLE_REVIEW_TIME = "2021-03-16T10:37:30.00Z";
+    private static final Long SAMPLE_ID_ONE = 1L;
+    private static final String SAMPLE_COMMENT = "SampleComment";
+    private static final short SAMPLE_STAR_COUNT = 5;
 
     private static final String SAMPLE_RESTAURANT_NAME = "SampleRestaurantName";
 
