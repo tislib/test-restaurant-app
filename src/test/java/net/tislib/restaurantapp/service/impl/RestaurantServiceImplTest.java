@@ -38,6 +38,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("PMD")
 class RestaurantServiceImplTest {
 
     private static final String ENTITY_NOT_FOUND_EXCEPTION_ERROR_MESSAGE = "restaurant not found with id: 6";
@@ -64,7 +65,8 @@ class RestaurantServiceImplTest {
     private UserRepository userRepository;
 
     @Test
-    void create() {
+    void callCreateAndExpectRestaurantCreated() {
+        //Arrange
         Restaurant restaurant = new Restaurant();
         restaurant.setId(SAMPLE_ID_ONE);
         User user = new User();
@@ -80,27 +82,40 @@ class RestaurantServiceImplTest {
         when(mapper.from(restaurantResource)).thenReturn(restaurant);
         when(authenticationService.getCurrentUser()).thenReturn(user);
 
-        when(repository.findById(null)).thenReturn(optionalRestaurant);
+        when(repository.findById(SAMPLE_ID_ONE)).thenReturn(optionalRestaurant);
         when(mapper.to(restaurant)).thenReturn(restaurantResource);
+        when(repository.save(restaurant)).thenAnswer(invocation -> {
+            restaurant.setId(SAMPLE_ID_ONE);
+            return restaurant;
+        });
 
+        //Act
         restaurantService.create(restaurantResource);
 
+        //Assert
         ArgumentCaptor<Restaurant> restaurantArgumentCaptor = ArgumentCaptor.forClass(Restaurant.class);
         verify(repository).save(restaurantArgumentCaptor.capture());
 
         ArgumentCaptor<RestaurantReviewStats> restaurantReviewStatsArgumentCaptor = ArgumentCaptor.forClass(RestaurantReviewStats.class);
         verify(reviewStatsRepository).save(restaurantReviewStatsArgumentCaptor.capture());
 
-        //Should complete feature
+        verify(mapper).from(restaurantResource);
+        verify(authenticationService, times(2)).getCurrentUser();
+
+        assertThat(restaurant.getId(), is(restaurantArgumentCaptor.getValue().getId()));
+        assertThat(restaurant.getName(), is(restaurantArgumentCaptor.getValue().getName()));
+        assertThat(restaurant.getReviewStats(), is(restaurantArgumentCaptor.getValue().getReviewStats()));
+        assertThat(restaurant.getOwner(), is(restaurantArgumentCaptor.getValue().getOwner()));
+
+        assertThat(restaurantReviewStatsArgumentCaptor.getValue().getRestaurant().getId(), is(SAMPLE_ID_ONE));
     }
 
     @Test
-    void list() {
+    void callListAndExpectRestaurantListIsReturned() {
         //Arrange
-        List<Restaurant> data = new ArrayList<>();
-
         Restaurant restaurant = prepareRestaurantForList();
 
+        List<Restaurant> data = new ArrayList<>();
         data.add(restaurant);
 
         Page<Restaurant> page = new PageImpl<>(data);
@@ -126,11 +141,10 @@ class RestaurantServiceImplTest {
         //Assert
         assertThat(actualResult.getContent().get(0).getId(), is(SAMPLE_ID_ONE));
         assertThat(actualResult.getContent().get(0).getName(), is(SAMPLE_RESTAURANT_NAME));
-
     }
 
     @Test
-    void get() {
+    void callGetAndExpectRestaurantEntityFoundedSuccessfully() {
         //Arrange
         Restaurant restaurant = new Restaurant();
         UserResource owner = new UserResource();
@@ -164,7 +178,7 @@ class RestaurantServiceImplTest {
     }
 
     @Test
-    void update() {
+    void callUpdateAndExpectRestaurantEntityUpdatedSuccessfully() {
         //Arrange
         UserResource userResource = prepareUserResourceForUpdate();
         RestaurantResource restaurantResource = prepareRestaurantResourceForUpdate(userResource);
@@ -199,7 +213,7 @@ class RestaurantServiceImplTest {
     }
 
     @Test
-    void delete() {
+    void callDeleteAndExpectRestaurantEntityDeletedSuccessfully() {
         //Arrange
         Restaurant restaurant = new Restaurant();
         Optional<Restaurant> optionalRestaurant = Optional.of(restaurant);

@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("PMD")
 class RestaurantReviewStatsServiceImplTest {
 
     private final static long ONE = 1L;
@@ -36,9 +37,8 @@ class RestaurantReviewStatsServiceImplTest {
     @Mock
     private ReviewRepository reviewRepository;
 
-
     @Test
-    void callInitAndExpectReviewsCalculatingAsExpected() throws Exception {
+    void callInitAndExpectReviewsCalculatingAsExpected() {
         //Arrange
         Restaurant restaurant = prepareRestaurant();
 
@@ -72,8 +72,6 @@ class RestaurantReviewStatsServiceImplTest {
         assertThat(expectedReview.getId(), equalTo(reviewArgumentCaptor.getValue().getId()));
         assertThat(expectedReview.getStarCount(), equalTo(reviewArgumentCaptor.getValue().getStarCount()));
         assertThat(expectedReview.isComputed(), equalTo(reviewArgumentCaptor.getValue().isComputed()));
-
-
     }
 
     private RestaurantReviewStats prepareRestaurantReviewStats() {
@@ -109,20 +107,5 @@ class RestaurantReviewStatsServiceImplTest {
 
         return restaurant;
     }
-//
-//    @Test
-//    void test2() throws Exception {
-//        Review review = new Review();
-//        Restaurant restaurant = new Restaurant();
-//        review.setRestaurant(restaurant);
-//        review.setId(1L);
-//        review.setStarCount((short) 5);
-//        // reviewStatsService.computeReview((short) 10, review, 0);
-//        ArgumentCaptor<Review> reviewArgumentCaptor = ArgumentCaptor.forClass(Review.class);
-//
-//        verify(reviewRepository).save(reviewArgumentCaptor.capture());
-//
-//    }
-
 
 }
